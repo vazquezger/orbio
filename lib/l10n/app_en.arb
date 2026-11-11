@@ -1,0 +1,119 @@
+{
+  "@@locale": "en",
+  "appTitle": "Orbio",
+  "cameraImportTooltip": "Import a photo of the canvas",
+  "cameraDemoTooltip": "Try with a demo snapshot",
+  "cameraCaptureTooltip": "Take snapshot",
+  "cameraFramingHint": "Hold the phone flat above the canvas.\nKeep all 4 anchors in view.",
+  "cameraNotFound": "No camera found on this device.",
+  "cameraUnavailable": "Camera is not available here.",
+  "cameraAccessDenied": "Camera access was denied. Enable it for Orbio in Settings.",
+  "cameraError": "Camera error: {details}",
+  "@cameraError": {
+    "placeholders": {
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "cameraImportButton": "Import canvas photo",
+  "cameraDemoButton": "Use demo snapshot",
+  "cameraRetryButton": "Retry camera",
+  "cameraImportFailed": "Could not import photo: {details}",
+  "@cameraImportFailed": {
+    "placeholders": {
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "cameraDemoFailed": "Could not create demo snapshot: {details}",
+  "@cameraDemoFailed": {
+    "placeholders": {
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "calibrateTitle": "Calibrate",
+  "calibrateConfirmTooltip": "Use these corners",
+  "calibrateLoadFailed": "Could not open photo: {details}",
+  "@calibrateLoadFailed": {
+    "placeholders": {
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "calibrateDetecting": "Finding anchors…",
+  "calibrateFoundAll": "Found all 4 anchors. Fine-tune if needed.",
+  "calibrateFoundNone": "No anchors found. Drag the corner handles onto the canvas corners.",
+  "calibrateFoundSome": "Found {count} of 4 anchors. Place the rest by hand.",
+  "@calibrateFoundSome": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrateCrossed": "The corner handles cross over. Place them clockwise: TL, TR, BR, BL.",
+  "calibrateHint": "Drag each corner handle onto an anchor",
+  "calibrateDetectedStatus": "Auto-detected {count}/4",
+  "@calibrateDetectedStatus": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrateReset": "Reset anchors",
+  "calibrateAutoDetect": "Auto-detect",
+  "calibrateExplore": "Explore",
+  "cornerHandleSemantics": "Corner handle {corner}",
+  "@cornerHandleSemantics": {
+    "placeholders": {
+      "corner": {
+        "type": "String"
+      }
+    }
+  },
+  "exploreTitle": "Explore",
+  "exploreResetZoom": "Reset zoom",
+  "exploreRecalibrate": "Recalibrate",
+  "exploreHint": "Tap a country to learn more · pinch to zoom",
+  "exploreLoadFailed": "Could not load map data: {details}",
+  "@exploreLoadFailed": {
+    "placeholders": {
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "layerFlags": "Flags",
+  "layerGovernment": "Government",
+  "layerPhysical": "Physical",
+  "pinVolcano": "Volcano",
+  "pinPeak": "Mountain",
+  "pinDepression": "Depression",
+  "elevationMeters": "{meters} m",
+  "@elevationMeters": {
+    "placeholders": {
+      "meters": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "noteFact": "Did you know?",
+  "noteStory": "Story",
+  "sheetPolitical": "Political",
+  "sheetPhysical": "Physical",
+  "sheetStories": "Stories",
+  "sheetCapital": "Capital",
+  "sheetGovernment": "Government",
+  "govPresidentialRepublic": "Presidential republic",
+  "govParliamentaryRepublic": "Parliamentary republic",
+  "govConstitutionalMonarchy": "Constitutional monarchy",
+  "govAbsoluteMonarchy": "Absolute monarchy",
+  "govMonarchyHint": "👑 a king, queen or emperor"
+}

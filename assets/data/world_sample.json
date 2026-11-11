@@ -1,0 +1,146 @@
+{
+  "version": 1,
+  "data_as_of": "2025-10",
+  "about": "Coordinates are WGS84 decimal degrees. 'outline' is a simplified border polygon in GeoJSON [lon, lat] order. Leaders change: verify before teaching. government_system is one of presidential_republic, parliamentary_republic, constitutional_monarchy, absolute_monarchy. Flags: assets/flags/<iso2>.svg.",
+  "countries": [
+    {
+      "code": "ARG",
+      "iso2": "ar",
+      "name": "Argentina",
+      "flag": "🇦🇷",
+      "capital": { "name": "Buenos Aires", "lat": -34.6037, "lon": -58.3816 },
+      "centroid": { "lat": -35.0, "lon": -65.0 },
+      "outline": [
+        [-66.2, -21.8], [-62.6, -22.2], [-57.6, -25.3], [-53.8, -26.2], [-55.7, -28.0],
+        [-58.4, -33.5], [-56.9, -36.4], [-57.8, -38.2], [-62.3, -38.8], [-65.0, -41.0],
+        [-63.8, -42.1], [-67.5, -46.0], [-65.8, -47.8], [-69.0, -51.6], [-68.6, -52.6],
+        [-71.9, -52.0], [-72.5, -48.0], [-71.7, -44.0], [-71.4, -40.0], [-71.0, -36.0],
+        [-70.0, -33.0], [-69.6, -28.0], [-68.4, -24.5], [-67.0, -22.5]
+      ],
+      "government_type": "Federal presidential republic",
+      "government_system": "presidential_republic",
+      "head_of_state": { "title": "President", "name": "Javier Milei" },
+      "head_of_government": null,
+      "pins": [
+        { "id": "arg-aconcagua", "name": "Aconcagua", "kind": "peak", "lat": -32.6532, "lon": -70.0109, "elevation_m": 6961, "description": "Highest mountain in the Americas and outside Asia." },
+        { "id": "arg-ojos-del-salado", "name": "Ojos del Salado", "kind": "volcano", "lat": -27.1092, "lon": -68.5414, "elevation_m": 6893, "description": "The highest volcano on Earth, on the border with Chile." },
+        { "id": "arg-lanin", "name": "Lanín", "kind": "volcano", "lat": -39.6372, "lon": -71.5022, "elevation_m": 3747, "description": "A snow-capped stratovolcano in Patagonia." }
+      ],
+      "notes": [
+        { "kind": "fact", "text": "The name Argentina comes from the Latin word 'argentum', meaning silver." },
+        { "kind": "fact", "text": "Ushuaia, in Tierra del Fuego, is often called the southernmost city in the world." },
+        { "kind": "story", "text": "Gauchos are the cowboys of the Pampas, famous for horse riding and sharing mate tea." }
+      ]
+    },
+    {
+      "code": "JPN",
+      "iso2": "jp",
+      "name": "Japan",
+      "flag": "🇯🇵",
+      "capital": { "name": "Tokyo", "lat": 35.6762, "lon": 139.6503 },
+      "centroid": { "lat": 36.5, "lon": 138.5 },
+      "outline": [
+        [130.0, 31.0], [131.5, 31.3], [132.0, 33.5], [135.0, 33.5], [136.8, 34.3],
+        [139.8, 34.9], [140.9, 35.7], [141.5, 38.0], [142.0, 39.5], [141.4, 41.4],
+        [143.2, 42.0], [145.5, 43.3], [144.8, 44.2], [141.8, 45.4], [141.3, 43.2],
+        [140.0, 41.5], [140.0, 40.0], [139.4, 38.0], [136.8, 37.3], [135.5, 35.6],
+        [132.5, 35.4], [130.9, 34.0], [129.6, 33.2]
+      ],
+      "government_type": "Parliamentary constitutional monarchy",
+      "government_system": "constitutional_monarchy",
+      "head_of_state": { "title": "Emperor", "name": "Naruhito" },
+      "head_of_government": { "title": "Prime Minister", "name": "Sanae Takaichi" },
+      "pins": [
+        { "id": "jpn-fuji", "name": "Mount Fuji", "kind": "volcano", "lat": 35.3606, "lon": 138.7274, "elevation_m": 3776, "description": "Japan's tallest peak; it last erupted in 1707." },
+        { "id": "jpn-sakurajima", "name": "Sakurajima", "kind": "volcano", "lat": 31.5850, "lon": 130.6570, "elevation_m": 1117, "description": "One of the most active volcanoes in Japan." },
+        { "id": "jpn-kita", "name": "Mount Kita", "kind": "peak", "lat": 35.6742, "lon": 138.2386, "elevation_m": 3193, "description": "Second-highest mountain in Japan, in the Southern Alps." }
+      ],
+      "notes": [
+        { "kind": "fact", "text": "Japan is made of more than 14,000 islands." },
+        { "kind": "fact", "text": "Japanese people call their country 'Nihon' or 'Nippon', meaning 'origin of the sun'." },
+        { "kind": "story", "text": "Children fly carp-shaped streamers called koinobori on Children's Day, 5 May." }
+      ]
+    },
+    {
+      "code": "EGY",
+      "iso2": "eg",
+      "name": "Egypt",
+      "flag": "🇪🇬",
+      "capital": { "name": "Cairo", "lat": 30.0444, "lon": 31.2357 },
+      "centroid": { "lat": 26.5, "lon": 30.0 },
+      "outline": [
+        [25.0, 31.6], [29.0, 30.9], [31.0, 31.6], [32.3, 31.3], [34.2, 31.3],
+        [34.9, 29.5], [34.3, 27.8], [33.9, 27.0], [35.5, 23.9], [36.9, 22.0],
+        [25.0, 22.0]
+      ],
+      "government_type": "Presidential republic",
+      "government_system": "presidential_republic",
+      "head_of_state": { "title": "President", "name": "Abdel Fattah el-Sisi" },
+      "head_of_government": { "title": "Prime Minister", "name": "Mostafa Madbouly" },
+      "pins": [
+        { "id": "egy-catherine", "name": "Mount Catherine", "kind": "peak", "lat": 28.5111, "lon": 33.9539, "elevation_m": 2629, "description": "Egypt's highest mountain, in the Sinai Peninsula." },
+        { "id": "egy-sinai", "name": "Mount Sinai", "kind": "peak", "lat": 28.5392, "lon": 33.9753, "elevation_m": 2285, "description": "Famous peak climbed at night to watch the sunrise." },
+        { "id": "egy-qattara", "name": "Qattara Depression", "kind": "depression", "lat": 29.5, "lon": 27.5, "elevation_m": -133, "description": "A huge desert basin far below sea level." }
+      ],
+      "notes": [
+        { "kind": "fact", "text": "The Great Pyramid of Giza was the tallest human-made structure for about 3,800 years." },
+        { "kind": "fact", "text": "Almost everyone in Egypt lives close to the Nile, which flows north into the Mediterranean." },
+        { "kind": "story", "text": "Ancient Egyptians wrote with hieroglyphs, a script of more than 700 picture signs." }
+      ]
+    },
+    {
+      "code": "ESP",
+      "iso2": "es",
+      "name": "Spain",
+      "flag": "🇪🇸",
+      "capital": { "name": "Madrid", "lat": 40.4168, "lon": -3.7038 },
+      "centroid": { "lat": 40.2, "lon": -3.7 },
+      "outline": [
+        [-9.3, 43.0], [-7.7, 43.8], [-1.8, 43.4], [3.2, 42.4], [3.2, 41.9],
+        [0.9, 41.0], [0.0, 39.6], [-0.4, 38.5], [-1.6, 37.0], [-2.1, 36.7],
+        [-5.6, 36.0], [-6.4, 36.8], [-7.4, 37.2], [-7.0, 38.0], [-7.3, 39.4],
+        [-6.8, 40.3], [-6.8, 41.9], [-8.2, 42.0], [-8.9, 41.9]
+      ],
+      "government_type": "Parliamentary constitutional monarchy",
+      "government_system": "constitutional_monarchy",
+      "head_of_state": { "title": "King", "name": "Felipe VI" },
+      "head_of_government": { "title": "Prime Minister", "name": "Pedro Sánchez" },
+      "pins": [
+        { "id": "esp-teide", "name": "Teide", "kind": "volcano", "lat": 28.2724, "lon": -16.6425, "elevation_m": 3715, "description": "Spain's highest peak, a volcano on the island of Tenerife." },
+        { "id": "esp-mulhacen", "name": "Mulhacén", "kind": "peak", "lat": 37.0533, "lon": -3.3114, "elevation_m": 3479, "description": "Highest mountain on the Iberian Peninsula, in the Sierra Nevada." },
+        { "id": "esp-aneto", "name": "Aneto", "kind": "peak", "lat": 42.6311, "lon": 0.6575, "elevation_m": 3404, "description": "The tallest summit of the Pyrenees." }
+      ],
+      "notes": [
+        { "kind": "fact", "text": "Spanish is the second most spoken native language in the world." },
+        { "kind": "fact", "text": "Madrid sits almost exactly in the centre of the Iberian Peninsula." },
+        { "kind": "story", "text": "In Buñol, people throw tomatoes at each other every August during La Tomatina." }
+      ]
+    },
+    {
+      "code": "ISL",
+      "iso2": "is",
+      "name": "Iceland",
+      "flag": "🇮🇸",
+      "capital": { "name": "Reykjavík", "lat": 64.1466, "lon": -21.9426 },
+      "centroid": { "lat": 64.9, "lon": -18.5 },
+      "outline": [
+        [-22.0, 64.0], [-24.0, 65.5], [-22.4, 66.4], [-18.0, 66.2], [-15.0, 66.5],
+        [-13.6, 65.2], [-14.6, 64.3], [-18.0, 63.4], [-21.0, 63.8]
+      ],
+      "government_type": "Parliamentary republic",
+      "government_system": "parliamentary_republic",
+      "head_of_state": { "title": "President", "name": "Halla Tómasdóttir" },
+      "head_of_government": { "title": "Prime Minister", "name": "Kristrún Frostadóttir" },
+      "pins": [
+        { "id": "isl-hvannadalshnukur", "name": "Hvannadalshnúkur", "kind": "peak", "lat": 64.0142, "lon": -16.6750, "elevation_m": 2110, "description": "Iceland's highest point, on the rim of the Öræfajökull volcano." },
+        { "id": "isl-hekla", "name": "Hekla", "kind": "volcano", "lat": 63.9833, "lon": -19.6667, "elevation_m": 1491, "description": "Once called the 'Gateway to Hell' in medieval legends." },
+        { "id": "isl-eyjafjallajokull", "name": "Eyjafjallajökull", "kind": "volcano", "lat": 63.6333, "lon": -19.6333, "elevation_m": 1651, "description": "Its 2010 ash cloud grounded flights across Europe." }
+      ],
+      "notes": [
+        { "kind": "fact", "text": "Iceland sits on the Mid-Atlantic Ridge, where two tectonic plates pull apart." },
+        { "kind": "fact", "text": "Iceland's parliament, the Althing, was founded in 930 and is one of the oldest in the world." },
+        { "kind": "story", "text": "Many Icelanders grow up with tales of huldufólk, the 'hidden people' who live in rocks." }
+      ]
+    }
+  ]
+}
