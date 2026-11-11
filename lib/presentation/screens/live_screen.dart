@@ -34,7 +34,7 @@ class LiveScreen extends StatefulWidget {
 
 class _LiveScreenState extends State<LiveScreen> {
   /// Longest side of the frame used for detection.
-  static const _analysisSize = 640;
+  static const _analysisSize = 1280;
 
   /// Hide the overlay when no marker has been seen for this long.
   static const _lostAfter = Duration(milliseconds: 600);

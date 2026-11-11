@@ -4,6 +4,8 @@
 Outputs (in print/):
   orbio_poster_6xA4.pdf   - 3x2 A4 landscape tiles, 72 x 36 cm assembled,
                             grey glue strips, cut marks and sheet labels
+  orbio_poster_4xA4.pdf   - 2x2 A4 landscape tiles, 54 x 27 cm assembled,
+                            grey glue strips, cut marks and sheet labels
   orbio_test_1xA4.pdf     - the whole canvas on one A4 page (desk tests only)
 
 Run from the repo root after tool/generate_canvas.py:
@@ -163,23 +165,24 @@ def page_content(ops, scale, src, dest, glue_rects=(), labels=(), marks=()):
 
 # ---- outputs -----------------------------------------------------------------
 
-def poster(ops):
+def poster(ops, cols, rows, scale, out_path):
     pdf = Pdf()
-    tw, th = gc.W / COLS, gc.H / ROWS          # canvas units per tile (before overlap)
-    ov = OVERLAP / POSTER_SCALE                 # overlap in canvas units
-    names = [[f"{'AB'[r]}{c + 1}" for c in range(COLS)] for r in range(ROWS)]
-    for r in range(ROWS):
-        for c in range(COLS):
+    total = cols * rows
+    tw, th = gc.W / cols, gc.H / rows          # canvas units per tile (before overlap)
+    ov = OVERLAP / scale                        # overlap in canvas units
+    names = [[f"{'AB'[r]}{c + 1}" for c in range(cols)] for r in range(rows)]
+    for r in range(rows):
+        for c in range(cols):
             x0, y0 = c * tw, r * th
-            x1 = (c + 1) * tw + (ov if c < COLS - 1 else 0)
-            y1 = (r + 1) * th + (ov if r < ROWS - 1 else 0)
+            x1 = (c + 1) * tw + (ov if c < cols - 1 else 0)
+            y1 = (r + 1) * th + (ov if r < rows - 1 else 0)
             glue = []
-            if c < COLS - 1:
+            if c < cols - 1:
                 glue.append(((c + 1) * tw, y0, x1, y1))
-            if r < ROWS - 1:
+            if r < rows - 1:
                 glue.append((x0, (r + 1) * th, x1, y1))
             left, top = MARGIN, MARGIN
-            w_mm = (x1 - x0) * POSTER_SCALE; h_mm = (y1 - y0) * POSTER_SCALE
+            w_mm = (x1 - x0) * scale; h_mm = (y1 - y0) * scale
             marks = []
             L = 5.0
             if c > 0:   # cut the left white margin along this edge
@@ -195,11 +198,11 @@ def poster(ops):
             how = "; ".join(steps) if steps else "es la primera: no se recorta"
             grid = "   ".join(" ".join(f"[{n}]" if n == name else n for n in row) for row in names)
             labels = [
-                (f"Orbio · Hoja {name} de 6 · {how}.", MARGIN + 3, A4_H - 7.7, 7, False),
+                (f"Orbio · Hoja {name} de {total} · {how}.", MARGIN + 3, A4_H - 7.7, 7, False),
                 (f"Orden: {grid}   ·   Imprimir al 100 % (tamaño real), A4 horizontal.", MARGIN + 3, A4_H - 5.0, 6, False),
             ]
-            pdf.add_page(page_content(ops, POSTER_SCALE, (x0, y0, x1, y1), (left, top), glue, labels, marks))
-    pdf.write("print/orbio_poster_6xA4.pdf")
+            pdf.add_page(page_content(ops, scale, (x0, y0, x1, y1), (left, top), glue, labels, marks))
+    pdf.write(out_path)
 
 
 def test_page(ops):
@@ -208,7 +211,7 @@ def test_page(ops):
     w_mm = gc.W * scale
     left = (A4_W - w_mm) / 2
     labels = [(f"Orbio · Lienzo de prueba ({gc.W * scale / 10:.1f} × {gc.H * scale / 10:.1f} cm). "
-               "Solo para probar en el escritorio: para usar, imprimí el póster de 6 hojas.", left, A4_H - 4, 7, False)]
+               "Solo para probar en el escritorio: para usar, imprimí el póster de 4 o 6 hojas.", left, A4_H - 4, 7, False)]
     pdf.add_page(page_content(ops, scale, (0, 0, gc.W, gc.H), (left, MARGIN), labels=labels))
     pdf.write("print/orbio_test_1xA4.pdf")
 
@@ -216,11 +219,13 @@ def test_page(ops):
 def main():
     os.makedirs("print", exist_ok=True)
     ops = canvas_ops(load_markers())
-    poster(ops)
+    poster(ops, cols=3, rows=2, scale=POSTER_SCALE, out_path="print/orbio_poster_6xA4.pdf")
+    poster(ops, cols=2, rows=2, scale=0.675, out_path="print/orbio_poster_4xA4.pdf")
     test_page(ops)
-    a = (gc.X1 - gc.X0) * POSTER_SCALE; b = (gc.Y1 - gc.Y0) * POSTER_SCALE
-    print(f"poster {gc.W * POSTER_SCALE / 10:.0f} x {gc.H * POSTER_SCALE / 10:.0f} cm; "
-          f"anchor centres {a:.0f} x {b:.0f} mm, diagonal {math.hypot(a, b):.0f} mm")
+    for label, s in [("6xA4", POSTER_SCALE), ("4xA4", 0.675)]:
+        a = (gc.X1 - gc.X0) * s; b = (gc.Y1 - gc.Y0) * s
+        print(f"poster {label}: {gc.W * s / 10:.0f} x {gc.H * s / 10:.0f} cm; "
+              f"anchor centres {a:.0f} x {b:.0f} mm, diagonal {math.hypot(a, b):.0f} mm")
 
 
 if __name__ == "__main__":

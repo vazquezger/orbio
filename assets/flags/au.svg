@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="flag-icons-au" viewBox="0 0 640 480">
+  <path fill="#00008b" d="M0 0h640v480H0z"/>
+  <path fill="#fff" d="M0 0v28l260 184h60v-28L60 0zm320 0L0 184v28h60L320 28z"/>
+  <path fill="#fff" d="M120 0h80v212h-80zM0 66h320v80H0z"/>
+  <path fill="#c8102e" d="M0 82h320v48H0zm136-82h48v212h-48zM0 0l106 71h30L30 0zm0 212 106-71h30L30 212zM320 0 214 71h-30L290 0zm0 212-106-71h-30l106 71z"/>
+  <g fill="#fff">
+    <polygon points="160,310 170,340 202,340 176,358 186,388 160,370 134,388 144,358 118,340 150,340"/>
+    <circle cx="480" cy="100" r="14"/>
+    <circle cx="420" cy="210" r="14"/>
+    <circle cx="535" cy="185" r="14"/>
+    <circle cx="480" cy="370" r="14"/>
+    <circle cx="510" cy="255" r="9"/>
+  </g>
+</svg>
+

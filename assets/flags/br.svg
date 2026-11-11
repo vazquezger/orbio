@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="flag-icons-br" viewBox="0 0 640 480">
+  <path fill="#009b3a" d="M0 0h640v480H0z"/>
+  <path fill="#fedf00" d="M320 48 592 240 320 432 48 240z"/>
+  <circle cx="320" cy="240" r="112" fill="#002776"/>
+  <path fill="#fff" d="M212 212c70-26 154-14 218 28-4 12-9 23-15 33-60-38-138-50-206-25 1-12 2-24 3-36z"/>
+</svg>
+

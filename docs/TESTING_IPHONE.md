@@ -8,6 +8,13 @@ Requisitos previos: Flutter, Xcode y CocoaPods instalados, con `flutter doctor` 
 
 ## 1. Primera vez (configuración)
 
+### 1.0 Verificar que la consola apunte a Xcode
+Si es la primera vez que usás Xcode en la Mac, asegurate de que las herramientas de línea de comandos apunten a Xcode completo (si no, `flutter devices` no va a detectar el iPhone):
+```bash
+sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+sudo xcodebuild -runFirstLaunch
+```
+
 ### 1.1 Conectar el iPhone
 1. Conectá el iPhone a la Mac con cable.
 2. Desbloquealo y aceptá **"Confiar en esta computadora"**.
@@ -29,8 +36,8 @@ Apple exige que toda app instalada en un iPhone esté firmada. Alcanza con un Ap
 2. **Xcode → Settings → Accounts → +** → agregá tu Apple ID.
 3. En el panel izquierdo elegí **Runner** (el ícono azul) → target **Runner** → pestaña **Signing & Capabilities**.
 4. Tildá **Automatically manage signing** y en **Team** elegí tu nombre ("Personal Team").
-5. Si aparece un error con el **Bundle Identifier**: tiene que ser único en todo Apple. Cambialo por uno propio (por ejemplo `com.orbio.app` o `com.<tu-nombre>.orbio`) y volvé a elegir el Team.
-6. Si Xcode ofrece descargar el soporte de iOS o del dispositivo, aceptá y esperá a que termine.
+5. Si aparece un error con el **Bundle Identifier**: tiene que ser único en todo Apple. Cambialo por uno propio (por ejemplo `com.<tu-nombre>.orbio`), apretá **Enter** para que se guarde en `ios/Runner.xcodeproj/project.pbxproj`, y volvé a elegir el Team.
+6. Si Xcode ofrece descargar e instalar el runtime/soporte de iOS o del dispositivo, aceptá y esperá a que termine de descargar y verificar.
 
 ### 1.4 Primera instalación
 ```bash
@@ -104,9 +111,9 @@ El resto del checklist de Calibrate y Explore es igual al de [TESTING_MACOS.md](
 
 | Síntoma | Solución |
 |---|---|
-| `flutter devices` no muestra el iPhone | Desbloquealo, revisá el cable, aceptá "Confiar" y verificá que el Modo desarrollador esté activo. |
+| `flutter devices` no muestra el iPhone (o `xcrun: error: unable to find utility "devicectl"`) | Corré `sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer` y `sudo xcodebuild -runFirstLaunch` (§1.0). Además, desbloqueá el iPhone, revisá el cable, aceptá "Confiar" y verificá el Modo desarrollador. |
 | `No valid code signing certificates were found` | Falta el Team en Signing & Capabilities (§1.3). |
-| `Failed to register bundle identifier` | El Bundle Identifier ya existe en otra cuenta: cambialo (§1.3, paso 5). |
+| `Failed to register bundle identifier` | El Bundle Identifier ya existe en otra cuenta: cambialo y apretá Enter para que se guarde en `ios/Runner.xcodeproj/project.pbxproj` (§1.3, paso 5). |
 | "Desarrollador no confiable" al abrir la app | §1.5. |
 | La app dejó de abrir después de una semana | Venció la firma gratuita: `flutter run -d <id>` de nuevo. |
 | `Could not run build/ios/...` o errores de CocoaPods | `cd ios && pod install && cd ..` y reintentar; si sigue, `flutter clean && flutter pub get`. |

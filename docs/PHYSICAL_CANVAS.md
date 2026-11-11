@@ -30,37 +30,42 @@ Referencia de diseño: `assets/maps/orbio_printable_canvas.svg`, generado por `t
 
 ---
 
-## 2. Etapa actual: póster de papel de 6 hojas
+## 2. Etapa actual: póster de papel (4 o 6 hojas)
 
 Damos el póster listo para imprimir, como PDF vectorial a escala exacta. No conviene que cada uno lo divida en hojas por su cuenta: si cambia la escala o las uniones caen en otro lugar, la calibración falla o se parte un marker.
 
 | Archivo | Para qué |
 |---|---|
-| [`print/orbio_poster_6xA4.pdf`](../print/orbio_poster_6xA4.pdf) | **El póster**: 6 hojas A4 horizontales (3 × 2) que arman **72 × 36 cm** |
+| [`print/orbio_poster_4xA4.pdf`](../print/orbio_poster_4xA4.pdf) | **Póster mediano (recomendado para escritorio)**: 4 hojas A4 horizontales (2 × 2) que arman **54 × 27 cm** (markers de 10,1 mm) |
+| [`print/orbio_poster_6xA4.pdf`](../print/orbio_poster_6xA4.pdf) | **Póster grande**: 6 hojas A4 horizontales (3 × 2) que arman **72 × 36 cm** (markers de 13,5 mm) |
 | [`print/orbio_test_1xA4.pdf`](../print/orbio_test_1xA4.pdf) | Una sola hoja (28 × 14 cm) **solo para pruebas** en el escritorio. Los markers miden ~5 mm: funcionan de cerca. |
 
-Los dos se generan con `python3 tool/generate_poster.py`, a partir de la misma geometría que el SVG. Hay que volver a generarlos si cambia `tool/generate_canvas.py`.
+Todos se generan con `python3 tool/generate_poster.py`, a partir de la misma geometría que el SVG. Hay que volver a generarlos si cambia `tool/generate_canvas.py`.
 
 ### 2.1 Cómo imprimirlo
 1. Abrí el PDF y elegí **Imprimir**.
 2. **Escala: 100 % / "Tamaño real".** Nunca "Ajustar a la página" ni "Reducir para que quepa".
 3. Papel **A4 horizontal**, mate, de 90 g o más. En blanco y negro alcanza.
-4. Cada hoja trae abajo su nombre (A1…B3), el orden y qué hacer con ella.
+4. Cada hoja trae abajo su nombre (`A1…B2` en 4 hojas o `A1…B3` en 6 hojas), el orden y qué hacer con ella.
 
 ### 2.2 Cómo armarlo
 El orden es:
 ```
-A1  A2  A3
-B1  B2  B3
+4 hojas (2×2):      6 hojas (3×2):
+A1  A2              A1  A2  A3
+B1  B2              B1  B2  B3
 ```
 - Las hojas tienen una **franja gris** a la derecha o abajo: es la zona de pegado y queda tapada por la hoja vecina.
 - Las hojas que van encima tienen **marcas de corte** en el margen del borde izquierdo o del superior. Recortá ese margen blanco siguiendo las marcas.
 - Apoyá cada hoja recortada sobre la franja gris de la anterior, haciendo coincidir las líneas del mapa, y pegala (adhesivo en barra o cinta doble faz).
-- Orden sugerido: A1 → A2 → A3, después B1 → B2 → B3 (cada una sobre la de arriba y la de la izquierda).
+- Orden sugerido: fila A de izquierda a derecha, después fila B de izquierda a derecha (cada una sobre la de arriba y la de la izquierda).
 
 Después:
 1. Pegá el póster sobre una superficie rígida y plana (cartón pluma o foamboard) (R6).
-2. **Verificá con una regla** la distancia entre los centros de las anchors: TL↔TR = **684 mm**, TL↔BL = **324 mm**, y diagonales iguales (**757 mm**). Más de 2 mm de diferencia indica una unión torcida.
+2. **Verificá con una regla** la distancia entre los centros de las anchors:
+   - **4 hojas (54 × 27 cm):** TL↔TR = **513 mm**, TL↔BL = **243 mm**, diagonales = **568 mm**.
+   - **6 hojas (72 × 36 cm):** TL↔TR = **684 mm**, TL↔BL = **324 mm**, diagonales = **757 mm**.
+   - Más de 2 mm de diferencia indica una unión torcida.
 3. Opcional, para hacerlo borrable: plastificado o vinilo transparente **mate** (R7).
 
 ### 2.3 Prueba rápida

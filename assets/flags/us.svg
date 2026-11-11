@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="flag-icons-us" viewBox="0 0 640 480">
+  <path fill="#bd3d44" d="M0 0h640v480H0z"/>
+  <path stroke="#fff" stroke-width="37" d="M0 55.3h640M0 129h640M0 203h640M0 277h640M0 351h640M0 425h640"/>
+  <path fill="#192f5d" d="M0 0h296v258.5H0z"/>
+  <g fill="#fff">
+    <circle cx="37" cy="32" r="10"/><circle cx="96" cy="32" r="10"/><circle cx="155" cy="32" r="10"/><circle cx="214" cy="32" r="10"/><circle cx="273" cy="32" r="10"/>
+    <circle cx="66" cy="64" r="10"/><circle cx="125" cy="64" r="10"/><circle cx="184" cy="64" r="10"/><circle cx="243" cy="64" r="10"/>
+    <circle cx="37" cy="96" r="10"/><circle cx="96" cy="96" r="10"/><circle cx="155" cy="96" r="10"/><circle cx="214" cy="96" r="10"/><circle cx="273" cy="96" r="10"/>
+    <circle cx="66" cy="128" r="10"/><circle cx="125" cy="128" r="10"/><circle cx="184" cy="128" r="10"/><circle cx="243" cy="128" r="10"/>
+    <circle cx="37" cy="160" r="10"/><circle cx="96" cy="160" r="10"/><circle cx="155" cy="160" r="10"/><circle cx="214" cy="160" r="10"/><circle cx="273" cy="160" r="10"/>
+    <circle cx="66" cy="192" r="10"/><circle cx="125" cy="192" r="10"/><circle cx="184" cy="192" r="10"/><circle cx="243" cy="192" r="10"/>
+    <circle cx="37" cy="224" r="10"/><circle cx="96" cy="224" r="10"/><circle cx="155" cy="224" r="10"/><circle cx="214" cy="224" r="10"/><circle cx="273" cy="224" r="10"/>
+  </g>
+</svg>
+

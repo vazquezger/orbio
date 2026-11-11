@@ -42,12 +42,12 @@ void main() {
 
   test('seed content: every country has a flag asset and a government system', () async {
     final countries = await MapRepository().loadCountries();
-    expect(countries, hasLength(5));
+    expect(countries, hasLength(15));
     for (final c in countries) {
       expect(File(c.flagAsset).existsSync(), isTrue, reason: c.flagAsset);
     }
     final monarchies = countries.where((c) => c.governmentSystem.isMonarchy).map((c) => c.code);
-    expect(monarchies, unorderedEquals(['JPN', 'ESP']));
+    expect(monarchies, unorderedEquals(['JPN', 'ESP', 'CAN', 'AUS']));
   });
 
   test('small countries switch to markers until zoomed in', () {
