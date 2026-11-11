@@ -16,8 +16,9 @@ import json
 W, H, PAD = 800, 400, 20
 X0, Y0, X1, Y1 = PAD, PAD, W - PAD, H - PAD   # anchor centres == normalized (0,0)..(1,1)
 
-# ArUco marker geometry (SVG units; 1 unit = 1 mm on the recommended 80x40 cm poster).
+# ArUco marker geometry in SVG units (the 6-sheet poster prints 1 unit = 0.9 mm).
 CELL = 2.5                    # one marker cell
+BLEED = 0.06                  # white cells overlap slightly: no hairline seams in print
 MARKER = 6 * CELL             # 4x4 bits + 1-cell black border = 6 cells (15 mm)
 QUIET = CELL                  # white margin around each marker
 FOOT = MARKER + 2 * QUIET     # footprint (20 mm)
@@ -161,7 +162,7 @@ def marker_svg(mid, code, cx, cy):
     for r in range(4):
         for c in range(4):
             if (code >> (15 - (r * 4 + c))) & 1:   # 1 = white cell
-                parts.append(f'    <rect x="{x + (c + 1) * CELL:.2f}" y="{y + (r + 1) * CELL:.2f}" width="{CELL}" height="{CELL}" fill="#fff"/>')
+                parts.append(f'    <rect x="{x + (c + 1) * CELL - BLEED:.2f}" y="{y + (r + 1) * CELL - BLEED:.2f}" width="{CELL + 2 * BLEED:.2f}" height="{CELL + 2 * BLEED:.2f}" fill="#fff"/>')
     parts.append('  </g>')
     return "\n".join(parts)
 

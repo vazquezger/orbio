@@ -25,7 +25,11 @@ flutter run -d macos      # en la Mac (sin cámara: importar foto o demo)
 
 En VS Code instalá la extensión **Flutter** (`Dart-Code.flutter`).
 
-El póster imprimible y las posiciones de sus marcadores se generan con `python3 tool/generate_canvas.py` (no editar el SVG a mano).
+El canvas y los PDFs para imprimir se generan con `python3 tool/generate_canvas.py && python3 tool/generate_poster.py` (no editar el SVG ni los PDFs a mano).
+
+## Imprimir el mapa
+
+**[print/orbio_poster_6xA4.pdf](print/orbio_poster_6xA4.pdf)**: 6 hojas A4 horizontales que arman un póster de 72 × 36 cm. Imprimir al **100 %** (tamaño real). Para pruebas rápidas hay una versión de una sola hoja: [print/orbio_test_1xA4.pdf](print/orbio_test_1xA4.pdf). Cómo armarlo: [docs/PHYSICAL_CANVAS.md](docs/PHYSICAL_CANVAS.md) §2.
 
 ## Documentación
 
@@ -33,7 +37,7 @@ El póster imprimible y las posiciones de sus marcadores se generan con `python3
 |---|---|
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Cómo está armada la app |
 | [docs/GLOSSARY.md](docs/GLOSSARY.md) | Vocabulario (canvas, anchor, snapshot, layer, pin…) |
-| [docs/PHYSICAL_CANVAS.md](docs/PHYSICAL_CANVAS.md) | Requisitos del mapa físico y cómo imprimir el póster |
+| [docs/PHYSICAL_CANVAS.md](docs/PHYSICAL_CANVAS.md) | Requisitos del mapa físico y cómo imprimir y armar el póster |
 | [docs/TESTING_MACOS.md](docs/TESTING_MACOS.md) | Probar en la Mac |
 | [docs/TESTING_IPHONE.md](docs/TESTING_IPHONE.md) | Probar en un iPhone |
 | [AGENTS.md](AGENTS.md) | Reglas para agentes de IA |
