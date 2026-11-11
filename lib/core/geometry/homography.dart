@@ -64,6 +64,68 @@ class Homography {
     return Homography._([...h, 1.0]);
   }
 
+  /// Least-squares homography mapping `src[i]` onto `dst[i]` for N ≥ 4
+  /// correspondences (e.g. all corners of every detected marker).
+  ///
+  /// Both point sets are normalized (Hartley: centroid at origin, mean
+  /// distance √2) before solving the normal equations, which keeps the
+  /// system well conditioned for pixel-scale coordinates.
+  factory Homography.fromPoints(List<Offset> src, List<Offset> dst) {
+    if (src.length != dst.length || src.length < 4) {
+      throw ArgumentError('Need the same number (≥ 4) of source and destination points');
+    }
+    if (src.length == 4) return Homography.fromCorrespondences(src, dst);
+    final ts = _normalizer(src), td = _normalizer(dst);
+    final s = [for (final p in src) ts.transform(p)];
+    final d = [for (final p in dst) td.transform(p)];
+
+    // Normal equations AᵀA h = Aᵀb, accumulated row by row (8 unknowns).
+    final ata = List<List<double>>.generate(8, (_) => List<double>.filled(9, 0));
+    void addRow(List<double> row, double b) {
+      for (var i = 0; i < 8; i++) {
+        if (row[i] == 0) continue;
+        for (var j = 0; j < 8; j++) {
+          ata[i][j] += row[i] * row[j];
+        }
+        ata[i][8] += row[i] * b;
+      }
+    }
+
+    for (var i = 0; i < s.length; i++) {
+      final x = s[i].dx, y = s[i].dy, u = d[i].dx, v = d[i].dy;
+      addRow([x, y, 1, 0, 0, 0, -u * x, -u * y], u);
+      addRow([0, 0, 0, x, y, 1, -v * x, -v * y], v);
+    }
+    final hn = Homography._([..._solveAugmented(ata), 1.0]);
+    return td.inverse().compose(hn).compose(ts)._normalized();
+  }
+
+  /// Similarity transform moving [pts] to centroid 0 and mean distance √2.
+  static Homography _normalizer(List<Offset> pts) {
+    var cx = 0.0, cy = 0.0;
+    for (final p in pts) {
+      cx += p.dx;
+      cy += p.dy;
+    }
+    cx /= pts.length;
+    cy /= pts.length;
+    var mean = 0.0;
+    for (final p in pts) {
+      mean += (p - Offset(cx, cy)).distance;
+    }
+    mean /= pts.length;
+    if (mean < 1e-12) {
+      throw const DegenerateHomographyException('All points coincide');
+    }
+    final k = 1.4142135623730951 / mean;
+    return Homography._([k, 0, -k * cx, 0, k, -k * cy, 0, 0, 1]);
+  }
+
+  Homography _normalized() {
+    final s = _m[8].abs() > 1e-15 ? _m[8] : 1.0;
+    return Homography._([for (final v in _m) v / s]);
+  }
+
   final List<double> _m;
 
   /// Row-major 3x3 values.

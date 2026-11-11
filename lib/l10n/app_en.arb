@@ -115,5 +115,21 @@
   "govParliamentaryRepublic": "Parliamentary republic",
   "govConstitutionalMonarchy": "Constitutional monarchy",
   "govAbsoluteMonarchy": "Absolute monarchy",
-  "govMonarchyHint": "👑 a king, queen or emperor"
+  "govMonarchyHint": "👑 a king, queen or emperor",
+  "cameraLiveTooltip": "Live view",
+  "liveTitle": "Live",
+  "liveSearching": "Point the camera at the canvas",
+  "liveDebugTooltip": "Show tracking details",
+  "liveDebugStats": "{markers} markers · {ms} ms",
+  "@liveDebugStats": {
+    "placeholders": {
+      "markers": {
+        "type": "int"
+      },
+      "ms": {
+        "type": "int"
+      }
+    }
+  },
+  "liveUnavailable": "Live view needs a camera (iPhone or Android)."
 }

@@ -51,5 +51,11 @@
   "govParliamentaryRepublic": "República parlamentaria",
   "govConstitutionalMonarchy": "Monarquía constitucional",
   "govAbsoluteMonarchy": "Monarquía absoluta",
-  "govMonarchyHint": "👑 un rey, reina o emperador"
+  "govMonarchyHint": "👑 un rey, reina o emperador",
+  "cameraLiveTooltip": "Vista en vivo",
+  "liveTitle": "En vivo",
+  "liveSearching": "Apuntá la cámara al lienzo",
+  "liveDebugTooltip": "Ver detalles del seguimiento",
+  "liveDebugStats": "{markers} marcadores · {ms} ms",
+  "liveUnavailable": "La vista en vivo necesita cámara (iPhone o Android)."
 }

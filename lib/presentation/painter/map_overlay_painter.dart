@@ -26,6 +26,7 @@ class MapOverlayPainter extends CustomPainter {
     required this.l10n,
     this.flags = const {},
     this.selectedCode,
+    this.floatingNames = false,
   });
 
   final PerspectiveProjector projector;
@@ -37,6 +38,9 @@ class MapOverlayPainter extends CustomPainter {
   /// Flag artwork by country code (may be partially loaded).
   final Map<String, PictureInfo> flags;
   final String? selectedCode;
+
+  /// Live view style: names float above each country on a soft pill.
+  final bool floatingNames;
 
   /// Opacity of area fills, so the canvas's black outlines stay visible.
   static const fillOpacity = 0.72;
@@ -65,7 +69,7 @@ class MapOverlayPainter extends CustomPainter {
       final area = Path()..addPolygon(points, true);
       final isSmall = isSmallOnScreen(points, s);
       if (isSmall) small.add(c.code);
-      if (!isSmall && showFlags) _paintFlag(canvas, c, area);
+      if (!isSmall && showFlags) _paintFlag(canvas, c, area, size);
       if (!isSmall && showGov) _paintGovernmentFill(canvas, c, area);
       if (showFlags || showGov || c.code == selectedCode) {
         _paintAreaOutline(canvas, area, c.code == selectedCode, s);
@@ -87,7 +91,11 @@ class MapOverlayPainter extends CustomPainter {
       if (showFlags || showGov) {
         // Below the marker when there is one, centred on the area otherwise.
         final markerHalf = showFlags ? flagIconSize.height / 2 : 7.0;
-        _paintName(canvas, c, isSmall ? at + Offset(0, (markerHalf + 9) * s) : at, s);
+        if (floatingNames) {
+          _paintFloatingName(canvas, c, at, isSmall ? markerHalf : 0, s);
+        } else {
+          _paintName(canvas, c, isSmall ? at + Offset(0, (markerHalf + 9) * s) : at, s);
+        }
       }
     }
   }
@@ -128,12 +136,16 @@ class MapOverlayPainter extends CustomPainter {
 
   /// Fills the country Area with its flag, warped by the same perspective as
   /// the snapshot so it looks painted on the canvas.
-  void _paintFlag(Canvas canvas, Country c, Path area) {
+  void _paintFlag(Canvas canvas, Country c, Path area, Size size) {
     final flag = flags[c.code];
     if (flag == null || flag.size.isEmpty) return;
+    // Up close a country can be far bigger than the screen: only composite
+    // the visible part.
+    final bounds = area.getBounds().intersect(Offset.zero & size);
+    if (bounds.isEmpty) return;
     canvas
       ..saveLayer(
-        area.getBounds(),
+        bounds,
         Paint()..color = Colors.white.withValues(alpha: fillOpacity),
       )
       ..clipPath(area)
@@ -205,6 +217,37 @@ class MapOverlayPainter extends CustomPainter {
         ],
       ),
     );
+  }
+
+  /// Name on a soft pill floating above the country, with a short stem.
+  void _paintFloatingName(Canvas canvas, Country c, Offset at, double markerHalf, double s) {
+    final tp = TextPainter(
+      textDirection: TextDirection.ltr,
+      text: TextSpan(
+        text: c.name,
+        style: TextStyle(fontSize: 13 * s, fontWeight: FontWeight.w700, color: Colors.black87),
+      ),
+    )..layout();
+    final lift = (markerHalf + 16) * s;
+    final rect = Rect.fromCenter(
+      center: at - Offset(0, lift + tp.height / 2),
+      width: tp.width + 14 * s,
+      height: tp.height + 6 * s,
+    );
+    final pill = RRect.fromRectAndRadius(rect, Radius.circular(rect.height / 2));
+    canvas
+      ..drawLine(
+        at - Offset(0, markerHalf * s),
+        Offset(at.dx, rect.bottom),
+        Paint()
+          ..color = Colors.white70
+          ..strokeWidth = 1.5 * s,
+      )
+      ..drawRRect(pill.shift(Offset(0, 2 * s)), Paint()..color = Colors.black26)
+      ..drawRRect(pill, Paint()..color = Colors.white.withValues(alpha: 0.9));
+    tp
+      ..paint(canvas, rect.topLeft + Offset(7 * s, 3 * s))
+      ..dispose();
   }
 
   void _paintCrown(Canvas canvas, Country c, double s) {
@@ -327,5 +370,6 @@ class MapOverlayPainter extends CustomPainter {
       old.selectedCode != selectedCode ||
       old.l10n != l10n ||
       old.flags != flags ||
+      old.floatingNames != floatingNames ||
       !(old.layers.length == layers.length && old.layers.containsAll(layers));
 }

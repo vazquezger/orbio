@@ -6,6 +6,7 @@ import '../../data/repositories/snapshot_store.dart';
 import '../../data/repositories/map_repository.dart';
 import '../l10n_labels.dart';
 import 'calibration_screen.dart';
+import 'live_screen.dart';
 
 /// Step 1: live top-down preview to take a snapshot of the canvas, or import
 /// an existing photo, or use a demo snapshot.
@@ -154,6 +155,19 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     }
   }
 
+  /// Live view needs the camera for itself: release ours while it is open.
+  Future<void> _openLive() async {
+    if (_busy) return;
+    final controller = _controller;
+    setState(() => _controller = null);
+    await controller?.dispose();
+    if (!mounted) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => LiveScreen(repository: widget.repository)),
+    );
+    if (mounted) await _initCamera();
+  }
+
   Future<void> _openCalibration(String path) async {
     if (!mounted) return;
     await Navigator.of(context).push(
@@ -181,6 +195,11 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         actions: [
+          IconButton(
+            tooltip: context.l10n.cameraLiveTooltip,
+            onPressed: _busy ? null : _openLive,
+            icon: const Icon(Icons.view_in_ar),
+          ),
           IconButton(
             tooltip: context.l10n.cameraImportTooltip,
             onPressed: _busy ? null : _importPhoto,

@@ -39,6 +39,7 @@ lib/
 │       ├── perspective_projector.dart# Corner handles ⇄ coordenadas normalizadas [0,1]
 │       ├── map_projection.dart       # lat/lon ⇄ normalizado (equirectangular)
 │       └── anchor_detector.dart      # Detección de las 4 anclas tipo diana
+│   └── tracking/                     # ArucoDetector, MarkerTracker, diccionario 4x4_50
 ├── data/
 │   ├── models/                       # Country, Pin, Note, GeoPoint, MapLayer
 │   └── repositories/
@@ -191,11 +192,32 @@ Bottom sheet arrastrable, de solo lectura, con datos políticos, pins físicos y
 
 ---
 
+## 7b. Live view (realidad aumentada, prueba técnica en la rama `ar-spike`)
+
+Alternativa a la snapshot: la cámara en vivo con las banderas pintadas encima. Acercar el teléfono es el zoom; no hace falta ver el canvas entero.
+
+```
+CameraController.startImageStream (yuv420)
+  → plano Y (gris), submuestreado a ~640 px
+  → compute(): ArucoDetector.detect → MarkerTracker.track
+  → Homography.fromPoints(esquinas normalizadas de cada marker, esquinas en el cuadro)
+  → cuadro → widget de preview → suavizado de las 4 esquinas del mapa
+  → MapOverlayPainter(layers: {flags}, floatingNames: true)
+```
+
+- **Markers**: 50 ArUco `DICT_4X4_50` (patrones oficiales de OpenCV 4.10.0, en `lib/core/tracking/aruco_dictionary.dart`) impresos en los océanos del canvas. `assets/maps/canvas_markers.json` tiene las esquinas normalizadas de cada uno. Los genera `tool/generate_canvas.py`.
+- **`ArucoDetector`** (Dart puro, sin OpenCV): umbral adaptativo → componentes 8-conexos → contorno (Moore) → Douglas–Peucker → cuadrilátero convexo → esquinas sub-píxel (recta ajustada por lado) → lectura de la grilla 6×6 → código en 4 rotaciones con ≤ 1 bit de error. Se descartó `opencv_dart`: con ArUco obliga a compilar OpenCV desde fuente y falla con Xcode 27.
+- **`MarkerTracker`**: con un solo marker alcanza; con varios, la homografía sale por mínimos cuadrados (normalización de Hartley + ecuaciones normales).
+- **Orientación**: en iOS los cuadros llegan ya rotados a la orientación del dispositivo; la pantalla se bloquea en vertical. Si el aspecto del cuadro no coincide con el de la preview (Android), se rota según `sensorOrientation`.
+- **Seguimiento perdido**: si no se ve ningún marker por 600 ms, se oculta la capa.
+- **Debug** (activado por defecto en la prueba): contorno e id de cada marker y ms por cuadro.
+
 ## 8. Tests
 
 | Archivo | Qué cubre |
 |---|---|
 | `geometry_test.dart` | Homografía exacta en las 4 correspondencias, ida y vuelta con la inversa, puntos degenerados, `toMatrix4`, anclas → (0,0)/(1,0)/(1,1)/(0,1), convexidad, proyección. |
+| `tracking_test.dart` | Homografía por mínimos cuadrados con ruido; canvas real renderizado en perspectiva: vista completa (50/50 markers), girada 180° y primer plano parcial; ids, esquinas (≤ 2.5 px) y homografía resultante. |
 | `anchor_detector_test.dart` | Dianas sintéticas con distractores (error < 0.6 px), imagen vacía, fallback al 10 %, bytes inválidos, y **end-to-end**: SVG real renderizado en perspectiva sobre fondo oscuro → 4/4 anclas con error < 2.5 px. |
 
 ---

@@ -192,4 +192,25 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get govMonarchyHint => '👑 un rey, reina o emperador';
+
+  @override
+  String get cameraLiveTooltip => 'Vista en vivo';
+
+  @override
+  String get liveTitle => 'En vivo';
+
+  @override
+  String get liveSearching => 'Apuntá la cámara al lienzo';
+
+  @override
+  String get liveDebugTooltip => 'Ver detalles del seguimiento';
+
+  @override
+  String liveDebugStats(int markers, int ms) {
+    return '$markers marcadores · $ms ms';
+  }
+
+  @override
+  String get liveUnavailable =>
+      'La vista en vivo necesita cámara (iPhone o Android).';
 }

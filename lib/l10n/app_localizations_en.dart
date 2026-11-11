@@ -190,4 +190,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get govMonarchyHint => '👑 a king, queen or emperor';
+
+  @override
+  String get cameraLiveTooltip => 'Live view';
+
+  @override
+  String get liveTitle => 'Live';
+
+  @override
+  String get liveSearching => 'Point the camera at the canvas';
+
+  @override
+  String get liveDebugTooltip => 'Show tracking details';
+
+  @override
+  String liveDebugStats(int markers, int ms) {
+    return '$markers markers · $ms ms';
+  }
+
+  @override
+  String get liveUnavailable => 'Live view needs a camera (iPhone or Android).';
 }

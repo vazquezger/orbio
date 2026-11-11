@@ -16,6 +16,16 @@ class PerspectiveProjector {
     _toMap = _toImage.inverse();
   }
 
+  /// Builds a projector from a known normalized → image homography (e.g.
+  /// from live marker tracking).
+  PerspectiveProjector.fromHomography(Homography mapToImage)
+      : _toImage = mapToImage,
+        corners = List.unmodifiable([
+          for (final c in normalizedCorners) mapToImage.transform(c),
+        ]) {
+    _toMap = _toImage.inverse();
+  }
+
   static const List<Offset> normalizedCorners = [
     Offset(0, 0),
     Offset(1, 0),

@@ -14,9 +14,10 @@ Reglas:
 | Término | UI (es) | Definición | En el código |
 |---|---|---|---|
 | **Canvas** | Lienzo | El mapa mundi físico y borrable (hoy un póster de papel; en el futuro un producto fabricado). Ver [PHYSICAL_CANVAS.md](PHYSICAL_CANVAS.md). | `orbio_printable_canvas.svg` |
+| **Marker** | Marcador | Cada uno de los cuadraditos ArUco impresos en los océanos del canvas. Permiten ubicar el teléfono viendo solo una parte del mapa. | `ArucoDetector`, `MarkerLayout` |
 | **Anchor** | Ancla | Cada una de las 4 dianas impresas en las esquinas del canvas (TL, TR, BR, BL). Sus centros marcan los bordes del mundo. | `AnchorDetector`, `anchor-TL` en el SVG |
 
-> Evitar **marker**/"marcador": en el mundo físico es la fibra con la que se escribe sobre el canvas.
+> En la UI en español, "marcador" puede confundirse con la fibra para escribir: si hace falta nombrarlo para chicos, usar "cuadradito". En código y docs es **marker**.
 
 ## Flujo
 
@@ -27,6 +28,7 @@ Reglas:
 | **Calibrate** | Calibrar | Alinear la snapshot con el mapa ubicando los 4 corner handles sobre las anchors. | `CalibrationScreen` |
 | **Corner handle** | Esquina | Cada uno de los 4 puntos arrastrables en Calibrate, en orden `[TL, TR, BR, BL]`. | `defaultCornerHandles()`, `_activeHandle` |
 | **Loupe** | Lupa | Lente de aumento que aparece al arrastrar un corner handle, para ubicarlo con precisión de un píxel. | `MagnifierLoupe` |
+| **Live view** | En vivo | La cámara en vivo con las banderas pintadas sobre el canvas (realidad aumentada). | `LiveScreen`, `MarkerTracker` |
 | **Explore** | Explorar | La vista con la snapshot y las layers proyectadas encima. | `ExploreScreen` |
 
 ## Contenido sobre el mapa

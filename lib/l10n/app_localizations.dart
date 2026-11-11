@@ -409,6 +409,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'👑 a king, queen or emperor'**
   String get govMonarchyHint;
+
+  /// No description provided for @cameraLiveTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Live view'**
+  String get cameraLiveTooltip;
+
+  /// No description provided for @liveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Live'**
+  String get liveTitle;
+
+  /// No description provided for @liveSearching.
+  ///
+  /// In en, this message translates to:
+  /// **'Point the camera at the canvas'**
+  String get liveSearching;
+
+  /// No description provided for @liveDebugTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Show tracking details'**
+  String get liveDebugTooltip;
+
+  /// No description provided for @liveDebugStats.
+  ///
+  /// In en, this message translates to:
+  /// **'{markers} markers · {ms} ms'**
+  String liveDebugStats(int markers, int ms);
+
+  /// No description provided for @liveUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Live view needs a camera (iPhone or Android).'**
+  String get liveUnavailable;
 }
 
 class _AppLocalizationsDelegate

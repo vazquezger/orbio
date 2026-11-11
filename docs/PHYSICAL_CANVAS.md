@@ -22,9 +22,10 @@ Estos puntos valen para cualquier versión del canvas. Si no se cumplen, la supe
 | R7 | **Acabado mate** | Los brillos y reflejos de la lámpara o el flash tapan contornos y anclas. |
 | R8 | **Alto contraste**: contornos negros sobre fondo blanco o muy claro | El umbral adaptativo necesita diferencia de luminancia. |
 | R9 | **Tolerancia de impresión**: la posición de cada ancla y la geometría del mapa con un error ≤ ±1 mm (o ≤ 0.2 % del ancho) | Es el error que se traslada a los países y puntos de interés proyectados. |
+| R11 | **Markers ArUco** en los océanos (hoy 50, `DICT_4X4_50`, 15 mm de lado + 2,5 mm de margen blanco en el póster de 80 × 40 cm), impresos en negro puro, nítidos y sin uniones de hojas encima | Son los que usa la Live view para ubicar el teléfono viendo solo una parte del mapa. |
 | R10 | Proporción entre centros de anclas **2.11 : 1** (760 × 360 unidades del SVG); la hoja total es 2 : 1 (800 × 400) | Así está definido `assets/maps/orbio_printable_canvas.svg`. |
 
-Referencia de diseño: `assets/maps/orbio_printable_canvas.svg` (ver [ARCHITECTURE.md §5](ARCHITECTURE.md#5-mapa-imprimible-assetsmapsorbio_printable_canvassvg)).
+Referencia de diseño: `assets/maps/orbio_printable_canvas.svg`, generado por `tool/generate_canvas.py` (no editarlo a mano; también escribe `assets/maps/canvas_markers.json`) (ver [ARCHITECTURE.md §5](ARCHITECTURE.md#5-mapa-imprimible-assetsmapsorbio_printable_canvassvg)).
 
 ---
 

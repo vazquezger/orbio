@@ -25,6 +25,8 @@ flutter run -d macos      # en la Mac (sin cámara: importar foto o demo)
 
 En VS Code instalá la extensión **Flutter** (`Dart-Code.flutter`).
 
+El póster imprimible y las posiciones de sus marcadores se generan con `python3 tool/generate_canvas.py` (no editar el SVG a mano).
+
 ## Documentación
 
 | Doc | Qué tiene |

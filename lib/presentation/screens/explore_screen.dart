@@ -10,6 +10,7 @@ import '../../data/models/government_system.dart';
 import '../../data/models/map_layer.dart';
 import '../../data/repositories/map_repository.dart';
 import '../l10n_labels.dart';
+import '../painter/flag_artwork.dart';
 import '../painter/government_style.dart';
 import '../painter/map_overlay_painter.dart';
 import '../widgets/country_detail_sheet.dart';
@@ -56,9 +57,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
   void dispose() {
     _transform.dispose();
     widget.image.dispose();
-    for (final f in _flags.values) {
-      f.picture.dispose();
-    }
+    FlagArtwork.disposeAll(_flags);
     super.dispose();
   }
 
@@ -75,24 +74,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
     }
   }
 
-  /// Loads flag artwork; a missing or broken flag just leaves that country
-  /// unfilled.
   Future<void> _loadFlags(List<Country> countries) async {
-    final loaded = <String, PictureInfo>{};
-    for (final c in countries) {
-      try {
-        loaded[c.code] = await vg.loadPicture(
-          SvgAssetLoader(c.flagAsset),
-          null,
-        );
-      } catch (e) {
-        debugPrint('Flag ${c.flagAsset} failed: $e');
-      }
-    }
+    final loaded = await FlagArtwork.loadAll(countries);
     if (!mounted) {
-      for (final f in loaded.values) {
-        f.picture.dispose();
-      }
+      FlagArtwork.disposeAll(loaded);
       return;
     }
     setState(() => _flags = loaded);

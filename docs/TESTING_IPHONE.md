@@ -75,6 +75,17 @@ Con el póster armado según [PHYSICAL_CANVAS.md](PHYSICAL_CANVAS.md):
 - [ ] En Explore, las banderas caen sobre los países impresos.
 - [ ] Probá también **Import canvas photo**, que abre la galería del iPhone, y la demo snapshot.
 
+### Live view (rama `ar-spike`)
+
+Imprimí el póster **nuevo** (con los cuadraditos en los océanos) y corré en release: `flutter run --release -d <id>`.
+
+- [ ] En la pantalla de cámara tocá el ícono 🧊 (Live view).
+- [ ] Apuntá al póster: aparecen las banderas pintadas sobre los países y los nombres flotando.
+- [ ] El modo debug (ícono 🐞, activo por defecto) muestra cada marker detectado en verde con su número, y arriba a la izquierda `N marcadores · X ms`.
+- [ ] Acercate a una zona (por ejemplo Sudamérica): las banderas siguen en su lugar aunque no se vea el póster entero.
+- [ ] Al apuntar fuera del póster, las banderas desaparecen en menos de un segundo.
+- [ ] Anotá: ¿las banderas tiemblan?, ¿se desfasan al mover rápido?, ¿cuántos ms tarda cada cuadro?, ¿desde qué distancia deja de detectar?
+
 El resto del checklist de Calibrate y Explore es igual al de [TESTING_MACOS.md](TESTING_MACOS.md) §4.
 
 ---
