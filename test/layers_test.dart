@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:orbio/core/geometry/perspective_projector.dart';
 import 'package:orbio/data/models/country.dart';
+import 'package:orbio/data/models/geo_point.dart';
 import 'package:orbio/data/models/government_system.dart';
 import 'package:orbio/data/models/map_layer.dart';
 import 'package:orbio/data/repositories/map_repository.dart';
@@ -53,9 +54,22 @@ void main() {
     // A 60 x 60 image-px square.
     const square = [Offset(0, 0), Offset(60, 0), Offset(60, 60), Offset(0, 60)];
     // Zoomed out: 2 image px per screen px → 30 px on screen → small.
-    expect(MapOverlayPainter.isSmallOnScreen(square, 2), isTrue);
+    expect(MapOverlayPainter.isSmallOnScreen([square], 2), isTrue);
     // Zoomed in: 0.5 image px per screen px → 120 px on screen → fill.
-    expect(MapOverlayPainter.isSmallOnScreen(square, 0.5), isFalse);
+    expect(MapOverlayPainter.isSmallOnScreen([square], 0.5), isFalse);
+  });
+
+  test('multi-part countries: nearby islands share a flag, far parts do not', () async {
+    final countries = await MapRepository().loadCountries();
+    final japan = countries.firstWhere((c) => c.code == 'JPN');
+    expect(japan.areas.length, greaterThan(1));
+    expect(MapOverlayPainter.flagGroups(japan.areas), hasLength(1));
+    // A far-away part (an overseas territory) gets its own group.
+    final far = [
+      ...japan.areas,
+      [const GeoPoint(-20, -60), const GeoPoint(-20, -58), const GeoPoint(-22, -58)],
+    ];
+    expect(MapOverlayPainter.flagGroups(far), hasLength(2));
   });
 
   testWidgets('painter draws every layer with real flags without errors', (tester) async {

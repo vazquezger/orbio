@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/geometry/homography.dart';
 import '../../core/geometry/perspective_projector.dart';
 import '../../data/models/country.dart';
+import '../../data/models/geo_point.dart';
 import '../../data/models/map_layer.dart';
 import '../../data/models/pin.dart';
 import '../l10n_labels.dart';
@@ -52,10 +53,24 @@ class MapOverlayPainter extends CustomPainter {
   /// Flag icon size for small countries, logical px (4:3).
   static const flagIconSize = Size(26, 19.5);
 
-  /// Whether a country whose projected outline is [imagePoints] is too small
+  /// Whether a country whose projected rings are [imageRings] is too small
   /// on screen at [labelScale] (image px per logical px) to show a fill.
-  static bool isSmallOnScreen(List<Offset> imagePoints, double labelScale) =>
-      math.sqrt(polygonArea(imagePoints)) / labelScale < smallAreaThreshold;
+  static bool isSmallOnScreen(Iterable<List<Offset>> imageRings, double labelScale) {
+    var area = 0.0;
+    for (final r in imageRings) {
+      area += polygonArea(r);
+    }
+    return math.sqrt(area) / labelScale < smallAreaThreshold;
+  }
+
+  /// Path of all [rings], filled even-odd so holes stay empty.
+  static Path ringsPath(Iterable<List<Offset>> rings) {
+    final path = Path()..fillType = PathFillType.evenOdd;
+    for (final r in rings) {
+      path.addPolygon(r, true);
+    }
+    return path;
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -65,11 +80,13 @@ class MapOverlayPainter extends CustomPainter {
 
     final small = <String>{};
     for (final c in countries) {
-      final points = [for (final g in c.outline) projector.geoToImage(g.lat, g.lon)];
-      final area = Path()..addPolygon(points, true);
-      final isSmall = isSmallOnScreen(points, s);
+      final rings = [
+        for (final ring in c.areas) [for (final g in ring) projector.geoToImage(g.lat, g.lon)],
+      ];
+      final area = ringsPath(rings);
+      final isSmall = isSmallOnScreen(rings, s);
       if (isSmall) small.add(c.code);
-      if (!isSmall && showFlags) _paintFlag(canvas, c, area, size);
+      if (!isSmall && showFlags) _paintFlag(canvas, c, rings, area, size);
       if (!isSmall && showGov) _paintGovernmentFill(canvas, c, area);
       if (showFlags || showGov || c.code == selectedCode) {
         _paintAreaOutline(canvas, area, c.code == selectedCode, s);
@@ -136,32 +153,56 @@ class MapOverlayPainter extends CustomPainter {
 
   /// Fills the country Area with its flag, warped by the same perspective as
   /// the snapshot so it looks painted on the canvas.
-  void _paintFlag(Canvas canvas, Country c, Path area, Size size) {
+  ///
+  /// Nearby parts (Japan's islands, Tierra del Fuego) share one flag; far
+  /// away parts get their own, so a distant territory doesn't stretch it.
+  void _paintFlag(Canvas canvas, Country c, List<List<Offset>> rings, Path area, Size size) {
     final flag = flags[c.code];
     if (flag == null || flag.size.isEmpty) return;
     // Up close a country can be far bigger than the screen: only composite
     // the visible part.
     final bounds = area.getBounds().intersect(Offset.zero & size);
     if (bounds.isEmpty) return;
-    canvas
-      ..saveLayer(
-        bounds,
-        Paint()..color = Colors.white.withValues(alpha: fillOpacity),
-      )
-      ..clipPath(area)
-      ..transform(_flagToImage(c, flag.size).toMatrix4().storage)
-      ..drawPicture(flag.picture)
-      ..restore();
+    canvas.saveLayer(bounds, Paint()..color = Colors.white.withValues(alpha: fillOpacity));
+    for (final group in flagGroups(c.areas)) {
+      canvas
+        ..save()
+        ..clipPath(ringsPath([for (final i in group) rings[i]]))
+        ..transform(_flagToImage([for (final i in group) c.areas[i]], flag.size).toMatrix4().storage)
+        ..drawPicture(flag.picture)
+        ..restore();
+    }
+    canvas.restore();
   }
 
-  /// Flag pixels → image pixels: scale the flag to cover the country's
-  /// bounding box on the (2:1) map, then apply the calibration homography.
-  Homography _flagToImage(Country c, Size flagSize) {
-    // Work in "map units" where the map is 2 x 1, so the flag keeps its
-    // aspect ratio on the physical canvas.
+  /// Groups ring indices that should share one flag: the main (largest)
+  /// part plus every part whose centre lies within half a size of it.
+  static List<List<int>> flagGroups(List<List<GeoPoint>> areas) {
+    final boxes = [for (final r in areas) _mapBox(r)];
+    var main = 0;
+    for (var i = 1; i < boxes.length; i++) {
+      if (boxes[i].width * boxes[i].height > boxes[main].width * boxes[main].height) main = i;
+    }
+    final m = boxes[main];
+    final near = m.inflate(math.max(m.width, m.height) * 0.5);
+    final grouped = <int>[];
+    final groups = <List<int>>[grouped];
+    for (var i = 0; i < boxes.length; i++) {
+      if (i == main || near.contains(boxes[i].center)) {
+        grouped.add(i);
+      } else {
+        groups.add([i]);
+      }
+    }
+    return groups;
+  }
+
+  /// Bounding box in "map units" where the map is 2 x 1, so flags keep their
+  /// aspect ratio on the physical canvas.
+  static Rect _mapBox(Iterable<GeoPoint> ring) {
     var minX = double.infinity, minY = double.infinity;
     var maxX = -double.infinity, maxY = -double.infinity;
-    for (final g in c.outline) {
+    for (final g in ring) {
       final n = g.normalized;
       final x = n.dx * 2, y = n.dy;
       if (x < minX) minX = x;
@@ -169,7 +210,15 @@ class MapOverlayPainter extends CustomPainter {
       if (y < minY) minY = y;
       if (y > maxY) maxY = y;
     }
-    final w = maxX - minX, h = maxY - minY;
+    return Rect.fromLTRB(minX, minY, maxX, maxY);
+  }
+
+  /// Flag pixels → image pixels: scale the flag to cover the bounding box of
+  /// [rings] on the (2:1) map, then apply the calibration homography.
+  Homography _flagToImage(List<List<GeoPoint>> rings, Size flagSize) {
+    final box = rings.map(_mapBox).reduce((a, b) => a.expandToInclude(b));
+    final minX = box.left, minY = box.top;
+    final w = box.width, h = box.height;
     final scale = [w / flagSize.width, h / flagSize.height].reduce((a, b) => a > b ? a : b);
     final ox = minX + (w - flagSize.width * scale) / 2;
     final oy = minY + (h - flagSize.height * scale) / 2;
@@ -334,7 +383,12 @@ class MapOverlayPainter extends CustomPainter {
   }) {
     final n = projector.imageToMap(imagePoint);
     for (final c in countries) {
-      if (_pointInPolygon(n, [for (final g in c.outline) g.normalized])) return c;
+      // Even-odd across all rings: islands count, holes don't.
+      var inside = false;
+      for (final ring in c.areas) {
+        if (_pointInPolygon(n, [for (final g in ring) g.normalized])) inside = !inside;
+      }
+      if (inside) return c;
     }
     // Fallback for tiny countries: nearest centroid within the radius.
     Country? best;

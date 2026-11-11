@@ -44,9 +44,8 @@ def canvas_ops(markers):
     """PDF path operators drawing the canvas in canvas units (y down)."""
     ops = []
 
-    def poly(pts):
-        xy = [gc.proj(lo, la) for lo, la in pts]
-        return f"{xy[0][0]:.3f} {xy[0][1]:.3f} m " + " ".join(f"{x:.3f} {y:.3f} l" for x, y in xy[1:]) + " h"
+    def polyline(xy):
+        return f"{xy[0][0]:.3f} {xy[0][1]:.3f} m " + " ".join(f"{x:.3f} {y:.3f} l" for x, y in xy[1:])
 
     def circle(cx, cy, r):
         k = 0.5523 * r
@@ -57,10 +56,10 @@ def canvas_ops(markers):
                 f"{cx + k:.3f} {cy - r:.3f} {cx + r:.3f} {cy - k:.3f} {cx + r:.3f} {cy:.3f} c h")
 
     ops.append("1 J 1 j 0 G")
-    ops.append("1.5 w")
-    ops += [poly(p) + " S" for p in gc.LAND.values()]
-    ops.append("1.2 w 1 g")
-    ops += [poly(p) + " B" for p in gc.SEAS.values()]
+    ops.append(f"{gc.BORDER_WIDTH} w")
+    ops += [polyline(line) + " S" for line in gc.BORDERS]
+    ops.append(f"{gc.COAST_WIDTH} w")
+    ops += [polyline(line) + " S" for line in gc.COAST]
 
     q = gc.QUIET
     for code, x, y, side in markers:

@@ -25,11 +25,17 @@ flutter run -d macos      # en la Mac (sin cámara: importar foto o demo)
 
 En VS Code instalá la extensión **Flutter** (`Dart-Code.flutter`).
 
-El canvas y los PDFs para imprimir se generan con `python3 tool/generate_canvas.py && python3 tool/generate_poster.py` (no editar el SVG ni los PDFs a mano).
+El canvas y los PDFs para imprimir se generan con `python3 tool/generate_canvas.py && python3 tool/generate_poster.py` (y `python3 tool/build_country_shapes.py` para las formas de los países) (no editar el SVG ni los PDFs a mano).
 
 ## Imprimir el mapa
 
 **[print/orbio_poster_6xA4.pdf](print/orbio_poster_6xA4.pdf)**: 6 hojas A4 horizontales que arman un póster de 72 × 36 cm. Imprimir al **100 %** (tamaño real). Para pruebas rápidas hay una versión de una sola hoja: [print/orbio_test_1xA4.pdf](print/orbio_test_1xA4.pdf). Cómo armarlo: [docs/PHYSICAL_CANVAS.md](docs/PHYSICAL_CANVAS.md) §2.
+
+## Créditos
+
+- Geografía: [Natural Earth](https://www.naturalearthdata.com/) 1:110m (dominio público).
+- Banderas: [flag-icons](https://github.com/lipis/flag-icons) (MIT).
+- Patrones de markers: ArUco `DICT_4X4_50` de [OpenCV](https://github.com/opencv/opencv) (Apache 2.0).
 
 ## Documentación
 

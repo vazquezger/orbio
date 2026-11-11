@@ -37,7 +37,7 @@ Reglas:
 |---|---|---|---|
 | **Layer** | Capa | Grupo de contenido que se prende y apaga: **Flags** (Banderas), **Government** (Gobierno) y **Physical** (Física). Flags y Government son excluyentes. | `MapLayer` |
 | **Pin** | — (genérico) | Elemento puntual sobre el mapa, con una ubicación lat/lon: volcán, montaña, depresión. Más adelante, por ejemplo, capitales. | `Pin`, `PinKind` |
-| **Area** | — (genérico) | Elemento que cubre una superficie: hoy, el contorno resaltado de un país. | `Country.outline` |
+| **Area** | — (genérico) | Elemento que cubre una superficie: hoy, la forma de un país (puede tener varias piezas: islas, exclaves). | `Country.areas` |
 | **Note** | Nota | Texto curado asociado a un país, de solo lectura, que se muestra en la hoja del país (sección Stories). Tipos: `fact` (¿Sabías que…?) y `story` (Historia). | `Note`, `NoteKind`, `Country.notes` |
 | **Pack** | Paquete | Conjunto de contenido instalable (countries, pins, curated notes). Hoy existe un único pack implícito: `world_sample.json`. | *(pendiente)* |
 

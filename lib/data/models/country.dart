@@ -29,7 +29,7 @@ class Country {
     required this.capitalName,
     required this.capital,
     required this.centroid,
-    required this.outline,
+    required this.areas,
     required this.governmentType,
     required this.governmentSystem,
     required this.headOfState,
@@ -51,9 +51,10 @@ class Country {
       capitalName: capital['name'] as String,
       capital: GeoPoint.fromJson(capital),
       centroid: GeoPoint.fromJson(json['centroid'] as Map<String, dynamic>),
-      outline: (json['outline'] as List<dynamic>)
-          .map((p) => GeoPoint.fromLonLat(p as List<dynamic>))
-          .toList(growable: false),
+      areas: [
+        for (final ring in (json['areas'] as List<dynamic>).cast<List<dynamic>>())
+          [for (final p in ring.cast<List<dynamic>>()) GeoPoint.fromLonLat(p)],
+      ],
       governmentType: json['government_type'] as String,
       governmentSystem: GovernmentSystem.parse(json['government_system'] as String),
       headOfState: Leader.fromJson(json['head_of_state'] as Map<String, dynamic>),
@@ -87,12 +88,12 @@ class Country {
   final String capitalName;
   final GeoPoint capital;
 
-  /// Label anchor for the country.
+  /// Label point for the country (Natural Earth label position).
   final GeoPoint centroid;
 
-  /// Simplified border polygon: the country's Area, used for highlighting
-  /// and hit-testing.
-  final List<GeoPoint> outline;
+  /// The country's Area: Natural Earth 1:110m rings (islands, exclaves and
+  /// holes), filled even-odd. Used for flags, highlighting and hit-testing.
+  final List<List<GeoPoint>> areas;
   final String governmentType;
   final GovernmentSystem governmentSystem;
   final Leader headOfState;

@@ -141,8 +141,8 @@ Pipeline:
   "countries": [{
     "code": "ARG", "name": "Argentina", "flag": "🇦🇷",
     "capital":  { "name": "Buenos Aires", "lat": -34.60, "lon": -58.38 },
-    "centroid": { "lat": -35.0, "lon": -65.0 },     // ancla de la etiqueta
-    "outline":  [[-66.2, -21.8], ...],               // [lon, lat] estilo GeoJSON
+    "centroid": { "lat": -33.5, "lon": -64.2 },     // punto de etiqueta de Natural Earth
+    "areas":    [[[-68.6, -52.6], ...], ...],        // anillos Natural Earth 1:110m, [lon, lat]
     "government_type": "...",              // texto libre (se muestra en la hoja)
     "government_system": "presidential_republic|parliamentary_republic|constitutional_monarchy|absolute_monarchy",
     "iso2": "ar",                          // bandera: assets/flags/ar.svg
@@ -191,6 +191,20 @@ Pipeline:
 Bottom sheet arrastrable, de solo lectura, con datos políticos, pins físicos y notas (facts y stories).
 
 ---
+
+## 7a. Geografía: una sola fuente
+
+Todo sale de **Natural Earth 1:110m** (dominio público, `tool/natural_earth/`, v5.1.2):
+
+| Script | Lee | Escribe |
+|---|---|---|
+| `tool/generate_canvas.py` | costas y fronteras | `assets/maps/orbio_printable_canvas.svg` (costa 1.2 u, fronteras 0.4 u, anchors, markers) y `canvas_markers.json` |
+| `tool/generate_poster.py` | lo mismo, vía `generate_canvas` | `print/*.pdf` |
+| `tool/build_country_shapes.py` | formas de países | `areas` y `centroid` de cada país en `world_sample.json` |
+
+- Se omiten los bordes artificiales: el borde sur de la Antártida (−90°) y los cortes en el antimeridiano.
+- **Zonas de exclusión**: ninguna línea se dibuja a menos de 28 u del centro de un anchor ni sobre su etiqueta (R4). Sin esto, la costa de la Antártida tocaba los anchors BL y BR y la detección fallaba.
+- **Areas de varias piezas** (`Country.areas`): islas, exclaves y huecos, rellenados even-odd. Para la bandera, la parte principal y las cercanas comparten una (`MapOverlayPainter.flagGroups`); las partes lejanas llevan la suya.
 
 ## 7b. Live view (realidad aumentada, prueba técnica en la rama `ar-spike`)
 
