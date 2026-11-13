@@ -116,6 +116,30 @@ abstract class AppLocalizations {
   /// **'Try with a demo snapshot'**
   String get cameraDemoTooltip;
 
+  /// No description provided for @cameraResumeTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume last calibration'**
+  String get cameraResumeTooltip;
+
+  /// No description provided for @cameraResumeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume last calibration'**
+  String get cameraResumeButton;
+
+  /// No description provided for @cameraResumeUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No previous calibration found.'**
+  String get cameraResumeUnavailable;
+
+  /// No description provided for @cameraResumeFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not resume last map: {details}'**
+  String cameraResumeFailed(String details);
+
   /// No description provided for @cameraCaptureTooltip.
   ///
   /// In en, this message translates to:
@@ -152,16 +176,22 @@ abstract class AppLocalizations {
   /// **'Camera error: {details}'**
   String cameraError(String details);
 
-  /// No description provided for @cameraImportButton.
+  /// No description provided for @cameraTakePhotoButton.
   ///
   /// In en, this message translates to:
-  /// **'Import canvas photo'**
-  String get cameraImportButton;
+  /// **'Take photo with camera'**
+  String get cameraTakePhotoButton;
+
+  /// No description provided for @cameraPickGalleryButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose photo from gallery'**
+  String get cameraPickGalleryButton;
 
   /// No description provided for @cameraDemoButton.
   ///
   /// In en, this message translates to:
-  /// **'Use demo snapshot'**
+  /// **'Try sample map (no paper needed)'**
   String get cameraDemoButton;
 
   /// No description provided for @cameraRetryButton.
@@ -287,7 +317,7 @@ abstract class AppLocalizations {
   /// No description provided for @exploreHint.
   ///
   /// In en, this message translates to:
-  /// **'Tap a country to learn more · pinch to zoom'**
+  /// **'Zoom in or tap a country to read its detail'**
   String get exploreHint;
 
   /// No description provided for @exploreLoadFailed.
@@ -295,120 +325,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load map data: {details}'**
   String exploreLoadFailed(String details);
-
-  /// No description provided for @layerFlags.
-  ///
-  /// In en, this message translates to:
-  /// **'Flags'**
-  String get layerFlags;
-
-  /// No description provided for @layerGovernment.
-  ///
-  /// In en, this message translates to:
-  /// **'Government'**
-  String get layerGovernment;
-
-  /// No description provided for @layerPhysical.
-  ///
-  /// In en, this message translates to:
-  /// **'Physical'**
-  String get layerPhysical;
-
-  /// No description provided for @pinVolcano.
-  ///
-  /// In en, this message translates to:
-  /// **'Volcano'**
-  String get pinVolcano;
-
-  /// No description provided for @pinPeak.
-  ///
-  /// In en, this message translates to:
-  /// **'Mountain'**
-  String get pinPeak;
-
-  /// No description provided for @pinDepression.
-  ///
-  /// In en, this message translates to:
-  /// **'Depression'**
-  String get pinDepression;
-
-  /// No description provided for @elevationMeters.
-  ///
-  /// In en, this message translates to:
-  /// **'{meters} m'**
-  String elevationMeters(int meters);
-
-  /// No description provided for @noteFact.
-  ///
-  /// In en, this message translates to:
-  /// **'Did you know?'**
-  String get noteFact;
-
-  /// No description provided for @noteStory.
-  ///
-  /// In en, this message translates to:
-  /// **'Story'**
-  String get noteStory;
-
-  /// No description provided for @sheetPolitical.
-  ///
-  /// In en, this message translates to:
-  /// **'Political'**
-  String get sheetPolitical;
-
-  /// No description provided for @sheetPhysical.
-  ///
-  /// In en, this message translates to:
-  /// **'Physical'**
-  String get sheetPhysical;
-
-  /// No description provided for @sheetStories.
-  ///
-  /// In en, this message translates to:
-  /// **'Stories'**
-  String get sheetStories;
-
-  /// No description provided for @sheetCapital.
-  ///
-  /// In en, this message translates to:
-  /// **'Capital'**
-  String get sheetCapital;
-
-  /// No description provided for @sheetGovernment.
-  ///
-  /// In en, this message translates to:
-  /// **'Government'**
-  String get sheetGovernment;
-
-  /// No description provided for @govPresidentialRepublic.
-  ///
-  /// In en, this message translates to:
-  /// **'Presidential republic'**
-  String get govPresidentialRepublic;
-
-  /// No description provided for @govParliamentaryRepublic.
-  ///
-  /// In en, this message translates to:
-  /// **'Parliamentary republic'**
-  String get govParliamentaryRepublic;
-
-  /// No description provided for @govConstitutionalMonarchy.
-  ///
-  /// In en, this message translates to:
-  /// **'Constitutional monarchy'**
-  String get govConstitutionalMonarchy;
-
-  /// No description provided for @govAbsoluteMonarchy.
-  ///
-  /// In en, this message translates to:
-  /// **'Absolute monarchy'**
-  String get govAbsoluteMonarchy;
-
-  /// No description provided for @govMonarchyHint.
-  ///
-  /// In en, this message translates to:
-  /// **'👑 a king, queen or emperor'**
-  String get govMonarchyHint;
 
   /// No description provided for @cameraLiveTooltip.
   ///
@@ -445,6 +361,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Live view needs a camera (iPhone or Android).'**
   String get liveUnavailable;
+
+  /// No description provided for @questionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask anything about the world…'**
+  String get questionHint;
+
+  /// No description provided for @questionAllFlags.
+  ///
+  /// In en, this message translates to:
+  /// **'All flags'**
+  String get questionAllFlags;
+
+  /// No description provided for @questionClearTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all flags'**
+  String get questionClearTooltip;
+
+  /// No description provided for @questionHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions'**
+  String get questionHistoryTitle;
+
+  /// No description provided for @questionAskButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask'**
+  String get questionAskButton;
+
+  /// No description provided for @questionListening.
+  ///
+  /// In en, this message translates to:
+  /// **'Listening… tap to send'**
+  String get questionListening;
+
+  /// No description provided for @questionMicTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask by voice'**
+  String get questionMicTooltip;
+
+  /// No description provided for @questionMicUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice recognition isn\'t available here. Type your question below.'**
+  String get questionMicUnavailable;
+
+  /// No description provided for @questionThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking…'**
+  String get questionThinking;
+
+  /// No description provided for @questionEmptyResult.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching countries found.'**
+  String get questionEmptyResult;
+
+  /// No description provided for @questionCloseUpHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Move closer or zoom in on a country to read its description'**
+  String get questionCloseUpHint;
+
+  /// No description provided for @questionCollapseTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse question bar'**
+  String get questionCollapseTooltip;
+
+  /// No description provided for @questionExpandTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask or view questions'**
+  String get questionExpandTooltip;
+
+  /// No description provided for @llmSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Provider'**
+  String get llmSettingsTitle;
+
+  /// No description provided for @llmProviderLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Provider'**
+  String get llmProviderLabel;
+
+  /// No description provided for @llmModelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Model'**
+  String get llmModelLabel;
+
+  /// No description provided for @llmApiKeyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'API key'**
+  String get llmApiKeyLabel;
+
+  /// No description provided for @llmApiKeyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste your API key'**
+  String get llmApiKeyHint;
+
+  /// No description provided for @llmOllamaUrlLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Ollama URL'**
+  String get llmOllamaUrlLabel;
+
+  /// No description provided for @llmOllamaUrlHint.
+  ///
+  /// In en, this message translates to:
+  /// **'http://192.168.1.x:11434'**
+  String get llmOllamaUrlHint;
+
+  /// No description provided for @llmSaveButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get llmSaveButton;
+
+  /// No description provided for @llmMissingKeyPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure an AI provider (Gemini, ChatGPT, Claude or local Ollama) to ask new questions.'**
+  String get llmMissingKeyPrompt;
+
+  /// No description provided for @projectionOrbioCanvas.
+  ///
+  /// In en, this message translates to:
+  /// **'Orbio Canvas'**
+  String get projectionOrbioCanvas;
+
+  /// No description provided for @projectionSchoolMap.
+  ///
+  /// In en, this message translates to:
+  /// **'School Map'**
+  String get projectionSchoolMap;
+
+  /// No description provided for @projectionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Projection'**
+  String get projectionLabel;
+
+  /// No description provided for @homeScanSchoolMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan School Map'**
+  String get homeScanSchoolMap;
+
+  /// No description provided for @homeScanSchoolMapSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo of any wall poster and explore with AI'**
+  String get homeScanSchoolMapSubtitle;
+
+  /// No description provided for @homeOrbioCanvas.
+  ///
+  /// In en, this message translates to:
+  /// **'Orbio Canvas & AR'**
+  String get homeOrbioCanvas;
+
+  /// No description provided for @homeOrbioCanvasSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-detection with anchors & real-time AR tracking'**
+  String get homeOrbioCanvasSubtitle;
+
+  /// No description provided for @homeDownloadCanvas.
+  ///
+  /// In en, this message translates to:
+  /// **'Download printable canvas (PDF)'**
+  String get homeDownloadCanvas;
+
+  /// No description provided for @homeOpenLive.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Live AR'**
+  String get homeOpenLive;
 }
 
 class _AppLocalizationsDelegate

@@ -1,24 +1,40 @@
 import 'package:flutter/material.dart';
 
-import 'data/repositories/snapshot_store.dart';
 import 'data/repositories/map_repository.dart';
+import 'data/repositories/question_store.dart';
+import 'data/repositories/snapshot_store.dart';
 import 'l10n/app_localizations.dart';
 import 'presentation/screens/camera_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(OrbioApp(repository: MapRepository(), snapshotStore: SnapshotStore()));
+  final questionStore = QuestionStore()..load();
+  runApp(
+    OrbioApp(
+      repository: MapRepository(),
+      snapshotStore: SnapshotStore(),
+      questionStore: questionStore,
+    ),
+  );
 }
 
-/// Orbio: Camera/Import → Snapshot → Calibrate → Explore.
+/// Orbio: Live view / Snapshot → Calibrate → Explore, with shared voice/LLM
+/// questions and question history.
 class OrbioApp extends StatelessWidget {
-  const OrbioApp({super.key, required this.repository, required this.snapshotStore});
+  const OrbioApp({
+    super.key,
+    required this.repository,
+    required this.snapshotStore,
+    this.questionStore,
+  });
 
   final MapRepository repository;
   final SnapshotStore snapshotStore;
+  final QuestionStore? questionStore;
 
   @override
   Widget build(BuildContext context) {
+    final store = questionStore ?? QuestionStore();
     final scheme = ColorScheme.fromSeed(seedColor: const Color(0xFF1F6FB2));
     return MaterialApp(
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
@@ -33,7 +49,11 @@ class OrbioApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: CameraScreen(repository: repository, snapshotStore: snapshotStore),
+      home: CameraScreen(
+        repository: repository,
+        snapshotStore: snapshotStore,
+        questionStore: store,
+      ),
     );
   }
 }

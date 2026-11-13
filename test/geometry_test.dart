@@ -76,13 +76,60 @@ void main() {
       expect(isConvexQuad(anchors), isTrue);
       expect(isConvexQuad([anchors[0], anchors[2], anchors[1], anchors[3]]), isFalse);
     });
+
+    test('PerspectiveProjector supports Mercator projection', () {
+      final proj = PerspectiveProjector(anchors, projection: MapProjection.mercatorSchool);
+      final londonImg = proj.geoToImage(51.5, -0.1);
+      final londonGeo = proj.imageToGeo(londonImg);
+      expect(londonGeo.lat, closeTo(51.5, 1e-4));
+      expect(londonGeo.lon, closeTo(-0.1, 1e-4));
+    });
   });
 
-  test('MapProjection round-trip', () {
-    final n = MapProjection.toNormalized(-34.6, -58.4);
-    final g = MapProjection.toGeo(n);
-    expect(g.lat, closeTo(-34.6, 1e-9));
-    expect(g.lon, closeTo(-58.4, 1e-9));
+  group('MapProjection', () {
+    test('Equirectangular round-trip', () {
+      const p = MapProjection.equirectangular;
+      final n = p.toNormalized(-34.6, -58.4);
+      final g = p.toGeo(n);
+      expect(g.lat, closeTo(-34.6, 1e-9));
+      expect(g.lon, closeTo(-58.4, 1e-9));
+    });
+
+    test('Mercator standard round-trip across global cities', () {
+      const p = MapProjection.mercatorStandard;
+      final cities = [
+        (-34.6037, -58.3816), // Buenos Aires
+        (51.5074, -0.1278),   // London
+        (35.6762, 139.6503),  // Tokyo
+        (-33.8688, 151.2093), // Sydney
+        (0.0, 0.0),           // Equator / Greenwich
+      ];
+      for (final (lat, lon) in cities) {
+        final n = p.toNormalized(lat, lon);
+        expect(n.dx, inInclusiveRange(0.0, 1.0));
+        expect(n.dy, inInclusiveRange(0.0, 1.0));
+        final g = p.toGeo(n);
+        expect(g.lat, closeTo(lat, 1e-5), reason: 'Lat failed for $lat, $lon');
+        expect(g.lon, closeTo(lon, 1e-5), reason: 'Lon failed for $lat, $lon');
+      }
+    });
+
+    test('Mercator school wall map clamps to cut boundaries', () {
+      const p = MapProjection.mercatorSchool;
+      // Top boundary is 85° lat -> dy = 0
+      final top = p.toNormalized(85.0, 0.0);
+      expect(top.dy, closeTo(0.0, 1e-6));
+
+      // Bottom boundary is -60° lat -> dy = 1
+      final bottom = p.toNormalized(-60.0, 0.0);
+      expect(bottom.dy, closeTo(1.0, 1e-6));
+
+      // Round trip within school map bounds
+      final ba = p.toNormalized(-34.6, -58.4);
+      final g = p.toGeo(ba);
+      expect(g.lat, closeTo(-34.6, 1e-5));
+      expect(g.lon, closeTo(-58.4, 1e-5));
+    });
   });
 }
 

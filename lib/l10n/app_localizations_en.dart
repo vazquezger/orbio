@@ -19,6 +19,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cameraDemoTooltip => 'Try with a demo snapshot';
 
   @override
+  String get cameraResumeTooltip => 'Resume last calibration';
+
+  @override
+  String get cameraResumeButton => 'Resume last calibration';
+
+  @override
+  String get cameraResumeUnavailable => 'No previous calibration found.';
+
+  @override
+  String cameraResumeFailed(String details) {
+    return 'Could not resume last map: $details';
+  }
+
+  @override
   String get cameraCaptureTooltip => 'Take snapshot';
 
   @override
@@ -41,10 +55,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get cameraImportButton => 'Import canvas photo';
+  String get cameraTakePhotoButton => 'Take photo with camera';
 
   @override
-  String get cameraDemoButton => 'Use demo snapshot';
+  String get cameraPickGalleryButton => 'Choose photo from gallery';
+
+  @override
+  String get cameraDemoButton => 'Try sample map (no paper needed)';
 
   @override
   String get cameraRetryButton => 'Retry camera';
@@ -121,75 +138,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreRecalibrate => 'Recalibrate';
 
   @override
-  String get exploreHint => 'Tap a country to learn more · pinch to zoom';
+  String get exploreHint => 'Zoom in or tap a country to read its detail';
 
   @override
   String exploreLoadFailed(String details) {
     return 'Could not load map data: $details';
   }
-
-  @override
-  String get layerFlags => 'Flags';
-
-  @override
-  String get layerGovernment => 'Government';
-
-  @override
-  String get layerPhysical => 'Physical';
-
-  @override
-  String get pinVolcano => 'Volcano';
-
-  @override
-  String get pinPeak => 'Mountain';
-
-  @override
-  String get pinDepression => 'Depression';
-
-  @override
-  String elevationMeters(int meters) {
-    final intl.NumberFormat metersNumberFormat =
-        intl.NumberFormat.decimalPattern(localeName);
-    final String metersString = metersNumberFormat.format(meters);
-
-    return '$metersString m';
-  }
-
-  @override
-  String get noteFact => 'Did you know?';
-
-  @override
-  String get noteStory => 'Story';
-
-  @override
-  String get sheetPolitical => 'Political';
-
-  @override
-  String get sheetPhysical => 'Physical';
-
-  @override
-  String get sheetStories => 'Stories';
-
-  @override
-  String get sheetCapital => 'Capital';
-
-  @override
-  String get sheetGovernment => 'Government';
-
-  @override
-  String get govPresidentialRepublic => 'Presidential republic';
-
-  @override
-  String get govParliamentaryRepublic => 'Parliamentary republic';
-
-  @override
-  String get govConstitutionalMonarchy => 'Constitutional monarchy';
-
-  @override
-  String get govAbsoluteMonarchy => 'Absolute monarchy';
-
-  @override
-  String get govMonarchyHint => '👑 a king, queen or emperor';
 
   @override
   String get cameraLiveTooltip => 'Live view';
@@ -210,4 +164,102 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get liveUnavailable => 'Live view needs a camera (iPhone or Android).';
+
+  @override
+  String get questionHint => 'Ask anything about the world…';
+
+  @override
+  String get questionAllFlags => 'All flags';
+
+  @override
+  String get questionClearTooltip => 'Show all flags';
+
+  @override
+  String get questionHistoryTitle => 'Questions';
+
+  @override
+  String get questionAskButton => 'Ask';
+
+  @override
+  String get questionListening => 'Listening… tap to send';
+
+  @override
+  String get questionMicTooltip => 'Ask by voice';
+
+  @override
+  String get questionMicUnavailable =>
+      'Voice recognition isn\'t available here. Type your question below.';
+
+  @override
+  String get questionThinking => 'Thinking…';
+
+  @override
+  String get questionEmptyResult => 'No matching countries found.';
+
+  @override
+  String get questionCloseUpHint =>
+      'Move closer or zoom in on a country to read its description';
+
+  @override
+  String get questionCollapseTooltip => 'Collapse question bar';
+
+  @override
+  String get questionExpandTooltip => 'Ask or view questions';
+
+  @override
+  String get llmSettingsTitle => 'AI Provider';
+
+  @override
+  String get llmProviderLabel => 'Provider';
+
+  @override
+  String get llmModelLabel => 'Model';
+
+  @override
+  String get llmApiKeyLabel => 'API key';
+
+  @override
+  String get llmApiKeyHint => 'Paste your API key';
+
+  @override
+  String get llmOllamaUrlLabel => 'Ollama URL';
+
+  @override
+  String get llmOllamaUrlHint => 'http://192.168.1.x:11434';
+
+  @override
+  String get llmSaveButton => 'Save';
+
+  @override
+  String get llmMissingKeyPrompt =>
+      'Configure an AI provider (Gemini, ChatGPT, Claude or local Ollama) to ask new questions.';
+
+  @override
+  String get projectionOrbioCanvas => 'Orbio Canvas';
+
+  @override
+  String get projectionSchoolMap => 'School Map';
+
+  @override
+  String get projectionLabel => 'Projection';
+
+  @override
+  String get homeScanSchoolMap => 'Scan School Map';
+
+  @override
+  String get homeScanSchoolMapSubtitle =>
+      'Take a photo of any wall poster and explore with AI';
+
+  @override
+  String get homeOrbioCanvas => 'Orbio Canvas & AR';
+
+  @override
+  String get homeOrbioCanvasSubtitle =>
+      'Auto-detection with anchors & real-time AR tracking';
+
+  @override
+  String get homeDownloadCanvas => 'Download printable canvas (PDF)';
+
+  @override
+  String get homeOpenLive => 'Open Live AR';
 }

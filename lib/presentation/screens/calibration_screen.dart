@@ -6,8 +6,11 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 import '../../core/geometry/anchor_detector.dart';
+import '../../core/geometry/map_projection.dart';
 import '../../core/geometry/perspective_projector.dart';
 import '../../data/repositories/map_repository.dart';
+import '../../data/repositories/question_store.dart';
+import '../../data/repositories/snapshot_store.dart';
 import '../l10n_labels.dart';
 import '../widgets/magnifier_loupe.dart';
 import 'explore_screen.dart';
@@ -22,10 +25,16 @@ class CalibrationScreen extends StatefulWidget {
     super.key,
     required this.imagePath,
     required this.repository,
+    this.initialProjectionType = MapProjectionType.equirectangular,
+    this.questionStore,
+    this.snapshotStore,
   });
 
   final String imagePath;
   final MapRepository repository;
+  final MapProjectionType initialProjectionType;
+  final QuestionStore? questionStore;
+  final SnapshotStore? snapshotStore;
 
   @override
   State<CalibrationScreen> createState() => _CalibrationScreenState();
@@ -43,6 +52,7 @@ class _CalibrationScreenState extends State<CalibrationScreen> {
   String? _loadError;
   int? _activeHandle;
   int _detectionRun = 0;
+  late MapProjectionType _projectionType = widget.initialProjectionType;
 
   ui.Size get _imageSize =>
       ui.Size(_image!.width.toDouble(), _image!.height.toDouble());
@@ -125,11 +135,23 @@ class _CalibrationScreenState extends State<CalibrationScreen> {
       ));
       return;
     }
+    widget.snapshotStore?.saveLastCalibration(
+      widget.imagePath,
+      _corners,
+      projectionType: _projectionType,
+    );
+    final projection = switch (_projectionType) {
+      MapProjectionType.equirectangular => MapProjection.equirectangular,
+      MapProjectionType.mercatorSchool => MapProjection.mercatorSchool,
+      MapProjectionType.mercatorStandard => MapProjection.mercatorStandard,
+    };
     Navigator.of(context).push(MaterialPageRoute<void>(
       builder: (_) => ExploreScreen(
         image: image.clone(),
         corners: List.of(_corners),
         repository: widget.repository,
+        projection: projection,
+        questionStore: widget.questionStore,
       ),
     ));
   }
@@ -139,8 +161,12 @@ class _CalibrationScreenState extends State<CalibrationScreen> {
     final image = _image;
     return Scaffold(
       backgroundColor: const Color(0xFF111111),
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(context.l10n.calibrateTitle),
+        backgroundColor: Colors.black45,
+        elevation: 0,
+        foregroundColor: Colors.white,
         actions: [
           IconButton(
             tooltip: context.l10n.calibrateConfirmTooltip,
@@ -153,10 +179,26 @@ class _CalibrationScreenState extends State<CalibrationScreen> {
           ? Center(child: Text(_loadError!, style: const TextStyle(color: Colors.white)))
           : image == null
               ? const Center(child: CircularProgressIndicator())
-              : Column(
+              : Stack(
+                  fit: StackFit.expand,
                   children: [
-                    Expanded(child: _buildCanvas(image)),
-                    _buildToolbar(),
+                    _buildCanvas(image),
+                    Positioned(
+                      left: 12,
+                      right: 12,
+                      bottom: 12,
+                      child: SafeArea(
+                        top: false,
+                        child: AnimatedOpacity(
+                          opacity: _activeHandle != null ? 0.05 : 1.0,
+                          duration: const Duration(milliseconds: 150),
+                          child: IgnorePointer(
+                            ignoring: _activeHandle != null,
+                            child: _buildToolbar(),
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
     );
@@ -262,50 +304,140 @@ class _CalibrationScreenState extends State<CalibrationScreen> {
   Widget _buildToolbar() {
     final det = _detection;
     final l = context.l10n;
-    return Material(
-      color: const Color(0xFF1C1C1C),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-          child: Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              Text(
-                det == null
-                    ? l.calibrateHint
-                    : l.calibrateDetectedStatus(det.detectedCount),
-                style: const TextStyle(color: Colors.white70),
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextButton.icon(
-                    onPressed: _detecting ? null : _resetAnchors,
-                    icon: const Icon(Icons.restart_alt),
-                    label: Text(l.calibrateReset),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isLandscape =
+            MediaQuery.of(context).orientation == Orientation.landscape;
+        return Material(
+          color: const Color(0xEB1C1C1C),
+          elevation: 6,
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: isLandscape
+                ? Row(
+                    children: [
+                      SegmentedButton<MapProjectionType>(
+                        style: const ButtonStyle(
+                          visualDensity: VisualDensity.compact,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        segments: [
+                          ButtonSegment(
+                            value: MapProjectionType.equirectangular,
+                            label: Text(l.projectionOrbioCanvas),
+                            icon: const Icon(Icons.crop_original, size: 16),
+                          ),
+                          ButtonSegment(
+                            value: MapProjectionType.mercatorSchool,
+                            label: Text(l.projectionSchoolMap),
+                            icon: const Icon(Icons.school, size: 16),
+                          ),
+                        ],
+                        selected: {_projectionType},
+                        onSelectionChanged: (set) {
+                          setState(() => _projectionType = set.first);
+                        },
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          det == null
+                              ? l.calibrateHint
+                              : l.calibrateDetectedStatus(det.detectedCount),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(color: Colors.white70, fontSize: 13),
+                        ),
+                      ),
+                      TextButton.icon(
+                        onPressed: _detecting ? null : _resetAnchors,
+                        icon: const Icon(Icons.restart_alt, size: 18),
+                        label: Text(l.calibrateReset),
+                      ),
+                      const SizedBox(width: 4),
+                      OutlinedButton.icon(
+                        onPressed: _detecting ? null : _autoDetect,
+                        icon: const Icon(Icons.auto_fix_high, size: 18),
+                        label: Text(l.calibrateAutoDetect),
+                      ),
+                      const SizedBox(width: 8),
+                      FilledButton.icon(
+                        onPressed: _confirm,
+                        icon: const Icon(Icons.map_outlined, size: 18),
+                        label: Text(l.calibrateExplore),
+                      ),
+                    ],
+                  )
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: SegmentedButton<MapProjectionType>(
+                          style: const ButtonStyle(
+                            visualDensity: VisualDensity.compact,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          segments: [
+                            ButtonSegment(
+                              value: MapProjectionType.equirectangular,
+                              label: Text(l.projectionOrbioCanvas),
+                              icon: const Icon(Icons.crop_original, size: 16),
+                            ),
+                            ButtonSegment(
+                              value: MapProjectionType.mercatorSchool,
+                              label: Text(l.projectionSchoolMap),
+                              icon: const Icon(Icons.school, size: 16),
+                            ),
+                          ],
+                          selected: {_projectionType},
+                          onSelectionChanged: (set) {
+                            setState(() => _projectionType = set.first);
+                          },
+                        ),
+                      ),
+                      Wrap(
+                        alignment: WrapAlignment.spaceBetween,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 8,
+                        runSpacing: 6,
+                        children: [
+                          Text(
+                            det == null
+                                ? l.calibrateHint
+                                : l.calibrateDetectedStatus(det.detectedCount),
+                            style: const TextStyle(color: Colors.white70, fontSize: 13),
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              TextButton.icon(
+                                onPressed: _detecting ? null : _resetAnchors,
+                                icon: const Icon(Icons.restart_alt, size: 18),
+                                label: Text(l.calibrateReset),
+                              ),
+                              const SizedBox(width: 4),
+                              OutlinedButton.icon(
+                                onPressed: _detecting ? null : _autoDetect,
+                                icon: const Icon(Icons.auto_fix_high, size: 18),
+                                label: Text(l.calibrateAutoDetect),
+                              ),
+                              const SizedBox(width: 8),
+                              FilledButton.icon(
+                                onPressed: _confirm,
+                                icon: const Icon(Icons.map_outlined, size: 18),
+                                label: Text(l.calibrateExplore),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 4),
-                  OutlinedButton.icon(
-                    onPressed: _detecting ? null : _autoDetect,
-                    icon: const Icon(Icons.auto_fix_high),
-                    label: Text(l.calibrateAutoDetect),
-                  ),
-                  const SizedBox(width: 8),
-                  FilledButton.icon(
-                    onPressed: _confirm,
-                    icon: const Icon(Icons.map_outlined),
-                    label: Text(l.calibrateExplore),
-                  ),
-                ],
-              ),
-            ],
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

@@ -20,7 +20,10 @@ class GeoPoint {
   final double lat;
   final double lon;
 
-  Offset get normalized => MapProjection.toNormalized(lat, lon);
+  Offset get normalized => MapProjection.equirectangular.toNormalized(lat, lon);
+
+  Offset normalizedWith(MapProjection projection) =>
+      projection.toNormalized(lat, lon);
 
   Map<String, dynamic> toJson() => {'lat': lat, 'lon': lon};
 }

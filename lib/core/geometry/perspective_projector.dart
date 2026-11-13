@@ -9,8 +9,10 @@ import 'map_projection.dart';
 /// The anchors map to the exact normalized boundaries of the world map:
 /// TL → (0,0), TR → (1,0), BR → (1,1), BL → (0,1).
 class PerspectiveProjector {
-  PerspectiveProjector(List<Offset> imageCorners)
-      : assert(imageCorners.length == 4),
+  PerspectiveProjector(
+    List<Offset> imageCorners, {
+    this.projection = MapProjection.equirectangular,
+  })  : assert(imageCorners.length == 4),
         corners = List.unmodifiable(imageCorners),
         _toImage = Homography.fromCorrespondences(normalizedCorners, imageCorners) {
     _toMap = _toImage.inverse();
@@ -18,8 +20,10 @@ class PerspectiveProjector {
 
   /// Builds a projector from a known normalized → image homography (e.g.
   /// from live marker tracking).
-  PerspectiveProjector.fromHomography(Homography mapToImage)
-      : _toImage = mapToImage,
+  PerspectiveProjector.fromHomography(
+    Homography mapToImage, {
+    this.projection = MapProjection.equirectangular,
+  })  : _toImage = mapToImage,
         corners = List.unmodifiable([
           for (final c in normalizedCorners) mapToImage.transform(c),
         ]) {
@@ -35,6 +39,7 @@ class PerspectiveProjector {
 
   /// Corner handles in image pixel space, `[TL, TR, BR, BL]`.
   final List<Offset> corners;
+  final MapProjection projection;
   final Homography _toImage;
   late final Homography _toMap;
 
@@ -49,7 +54,10 @@ class PerspectiveProjector {
   Offset imageToMap(Offset imagePoint) => _toMap.transform(imagePoint);
 
   Offset geoToImage(double lat, double lon) =>
-      mapToImage(MapProjection.toNormalized(lat, lon));
+      mapToImage(projection.toNormalized(lat, lon));
+
+  ({double lat, double lon}) imageToGeo(Offset imagePoint) =>
+      projection.toGeo(imageToMap(imagePoint));
 
   /// Whether a point in image space lands inside the calibrated map.
   bool containsImagePoint(Offset imagePoint) {

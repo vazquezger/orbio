@@ -4,25 +4,27 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../core/geometry/map_projection.dart';
 import '../../core/geometry/perspective_projector.dart';
 import '../../data/models/country.dart';
-import '../../data/models/government_system.dart';
-import '../../data/models/map_layer.dart';
 import '../../data/repositories/map_repository.dart';
+import '../../data/repositories/question_store.dart';
 import '../l10n_labels.dart';
 import '../painter/flag_artwork.dart';
-import '../painter/government_style.dart';
 import '../painter/map_overlay_painter.dart';
-import '../widgets/country_detail_sheet.dart';
-import '../widgets/layer_toggle_bar.dart';
+import '../widgets/country_card.dart';
+import '../widgets/question_bar.dart';
 
-/// Step 3 (Explore): zoomable snapshot with the layers projected on top.
+/// Step 3 (Explore): zoomable snapshot with flags and question answers
+/// projected on top.
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({
     super.key,
     required this.image,
     required this.corners,
     required this.repository,
+    this.projection = MapProjection.equirectangular,
+    this.questionStore,
   });
 
   /// Owned by this screen (disposed with it).
@@ -31,6 +33,8 @@ class ExploreScreen extends StatefulWidget {
   /// Calibrated corner handles in image pixels, `[TL, TR, BR, BL]`.
   final List<Offset> corners;
   final MapRepository repository;
+  final MapProjection projection;
+  final QuestionStore? questionStore;
 
   @override
   State<ExploreScreen> createState() => _ExploreScreenState();
@@ -40,12 +44,16 @@ class _ExploreScreenState extends State<ExploreScreen> {
   final _transform = TransformationController();
   late final PerspectiveProjector _projector = PerspectiveProjector(
     widget.corners,
+    projection: widget.projection,
   );
-  Set<MapLayer> _layers = {MapLayer.flags};
+  late final QuestionStore _questionStore =
+      widget.questionStore ?? QuestionStore();
+
   List<Country> _countries = const [];
   Map<String, PictureInfo> _flags = const {};
   String? _selected;
   String? _error;
+  bool _barCollapsed = true;
 
   @override
   void initState() {
@@ -76,6 +84,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   Future<void> _loadFlags(List<Country> countries) async {
     final loaded = await FlagArtwork.loadAll(countries);
+    debugPrint('ExploreScreen: received ${loaded.length} loaded flags');
     if (!mounted) {
       FlagArtwork.disposeAll(loaded);
       return;
@@ -83,26 +92,44 @@ class _ExploreScreenState extends State<ExploreScreen> {
     setState(() => _flags = loaded);
   }
 
-  Future<void> _onTap(Offset imagePoint, double labelScale) async {
+  void _onTap(Offset imagePoint, double labelScale) {
+    final active = _questionStore.activeQuestion;
+    final candidates = active != null
+        ? [
+            for (final c in _countries)
+              if (active.itemsByCode.containsKey(c.code)) c,
+          ]
+        : _countries;
     final hit = MapOverlayPainter.countryAt(
       imagePoint,
       _projector,
-      _countries,
+      candidates,
       labelRadiusPx: 36 * labelScale,
     );
-    if (hit == null) {
-      setState(() => _selected = null);
-      return;
-    }
-    setState(() => _selected = hit.code);
-    await CountryDetailSheet.show(context, country: hit);
-    if (mounted) setState(() => _selected = null);
+    setState(() {
+      _selected = (hit == null || _selected == hit.code) ? null : hit.code;
+      _barCollapsed = true;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final image = widget.image;
     final iw = image.width.toDouble(), ih = image.height.toDouble();
+
+    Country? selectedCountry;
+    if (_selected != null) {
+      for (final c in _countries) {
+        if (c.code == _selected) {
+          selectedCountry = c;
+          break;
+        }
+      }
+    }
+    final activeQ = _questionStore.activeQuestion;
+    final selectedItem = selectedCountry != null ? activeQ?.itemsByCode[selectedCountry.code] : null;
+    final selectedRank = selectedCountry != null ? activeQ?.rankOf(selectedCountry.code) : null;
+
     return Scaffold(
       backgroundColor: const Color(0xFF111111),
       appBar: AppBar(
@@ -122,13 +149,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
       ),
       body: Column(
         children: [
-          Material(
-            color: Theme.of(context).colorScheme.surface,
-            child: LayerToggleBar(
-              active: _layers,
-              onChanged: (l) => setState(() => _layers = l),
-            ),
-          ),
           if (_error != null)
             Padding(
               padding: const EdgeInsets.all(8),
@@ -141,26 +161,37 @@ class _ExploreScreenState extends State<ExploreScreen> {
             child: Stack(
               children: [
                 Positioned.fill(child: _buildViewer(image, iw, ih)),
-                if (_layers.contains(MapLayer.government))
+                if (selectedCountry != null)
                   Positioned(
                     left: 12,
-                    bottom: 12,
-                    child: IgnorePointer(
-                      child: _GovernmentLegend(countries: _countries),
+                    right: 12,
+                    bottom: _barCollapsed ? 12 : 78,
+                    child: SafeArea(
+                      top: false,
+                      child: CountryCard(
+                        country: selectedCountry,
+                        item: selectedItem,
+                        rank: selectedRank,
+                        onClose: () => setState(() => _selected = null),
+                      ),
                     ),
                   ),
+                Positioned(
+                  left: 12,
+                  right: _barCollapsed ? null : 12,
+                  bottom: selectedCountry != null && _barCollapsed ? 148 : 12,
+                  child: SafeArea(
+                    top: false,
+                    child: QuestionBar(
+                      store: _questionStore,
+                      countries: _countries,
+                      collapsed: _barCollapsed,
+                      onCollapsedChanged: (c) =>
+                          setState(() => _barCollapsed = c),
+                    ),
+                  ),
+                ),
               ],
-            ),
-          ),
-          SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Text(
-                context.l10n.exploreHint,
-                style: Theme.of(context).textTheme.bodySmall
-                    ?.copyWith(color: Colors.white60),
-              ),
             ),
           ),
         ],
@@ -176,6 +207,11 @@ class _ExploreScreenState extends State<ExploreScreen> {
           transformationController: _transform,
           minScale: 1,
           maxScale: 16,
+          onInteractionStart: (_) {
+            if (!_barCollapsed) {
+              setState(() => _barCollapsed = true);
+            }
+          },
           child: SizedBox(
             width: box.maxWidth,
             height: box.maxHeight,
@@ -184,10 +220,18 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 width: iw,
                 height: ih,
                 child: ListenableBuilder(
-                  listenable: _transform,
+                  listenable: Listenable.merge([_transform, _questionStore]),
                   builder: (context, _) {
                     final zoom = _transform.value.getMaxScaleOnAxis();
                     final labelScale = 1 / (fit * zoom);
+                    final MapDetailLevel detailLevel;
+                    if (zoom < 1.6) {
+                      detailLevel = MapDetailLevel.overview;
+                    } else if (zoom < 3.0) {
+                      detailLevel = MapDetailLevel.regional;
+                    } else {
+                      detailLevel = MapDetailLevel.closeUp;
+                    }
                     return GestureDetector(
                       onTapUp: (d) => _onTap(d.localPosition, labelScale),
                       child: Stack(
@@ -202,11 +246,13 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             painter: MapOverlayPainter(
                               projector: _projector,
                               countries: _countries,
-                              layers: _layers,
                               l10n: context.l10n,
                               flags: _flags,
                               labelScale: labelScale,
+                              activeQuestion: _questionStore.activeQuestion,
                               selectedCode: _selected,
+                              isCloseUp: zoom >= 3.0,
+                              detailLevel: detailLevel,
                             ),
                           ),
                         ],
@@ -219,62 +265,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
           ),
         );
       },
-    );
-  }
-}
-
-/// Fixed legend for the Government layer; lists only systems on the map.
-class _GovernmentLegend extends StatelessWidget {
-  const _GovernmentLegend({required this.countries});
-  final List<Country> countries;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = context.l10n;
-    final present = {for (final c in countries) c.governmentSystem};
-    final systems = GovernmentSystem.values.where(present.contains).toList();
-    if (systems.isEmpty) return const SizedBox.shrink();
-    final theme = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            for (final g in systems)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 2),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 14,
-                      height: 14,
-                      decoration: BoxDecoration(
-                        color: GovernmentStyle.color(g),
-                        borderRadius: BorderRadius.circular(3),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      GovernmentStyle.label(g, l),
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  ],
-                ),
-              ),
-            if (systems.any((g) => g.isMonarchy))
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  l.govMonarchyHint,
-                  style: theme.textTheme.bodySmall,
-                ),
-              ),
-          ],
-        ),
-      ),
     );
   }
 }

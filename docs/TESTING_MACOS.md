@@ -68,6 +68,9 @@ flutter test test/l10n_test.dart
 
 ```bash
 flutter run -d macos
+
+# Opcional: pasar tu clave de Gemini exportada en tu shell (ver TESTING_IPHONE.md §3)
+flutter run -d macos --dart-define=GEMINI_API_KEY="$GEMINI_API_KEY"
 ```
 
 La primera compilación tarda unos minutos. Con la app abierta, en la terminal:
@@ -99,16 +102,14 @@ Tocá **Use demo snapshot**.
 - [ ] **Auto-detect** → los handles vuelven a las anchors.
 - [ ] Cruzá dos handles (por ejemplo TL a la derecha de TR): el cuadrilátero se pone **rojo** y **Explore** muestra *"The corner handles cross over…"*.
 
-### 4.3 Explore
+### 4.3 Explore y preguntas sobre el mundo
 Con los handles bien puestos, tocá **Explore**.
-- [ ] Capa **Flags** (Banderas) activa por defecto: Argentina, Japón, Egipto, España e Islandia pintados con su bandera, en perspectiva y recortados al contorno, con el nombre encima.
-- [ ] Sin zoom, los países chicos (Islandia, España, Egipto, Japón) aparecen como **ícono de bandera** con el nombre debajo. Hacé zoom sobre España: pasa a estar pintada con la bandera.
-- [ ] Activá **Government** (Gobierno): se apaga Flags; los países se colorean por forma de gobierno, aparece 👑 sobre Tokio y Madrid, y una leyenda abajo a la izquierda. Volvé a Flags: se apaga Government.
-- [ ] Los contornos coloreados coinciden con los continentes del mapa de la foto. Es la prueba visual de que la homografía está bien.
-- [ ] Activá **Physical** (Física): aparecen pins de volcanes (rojo con humo), montañas (marrón) y la Depresión de Qattara (azul, invertido) con su elevación.
-- [ ] Zoom con pinch en el trackpad (o scroll): la foto se agranda pero **el texto mantiene su tamaño** en pantalla. 🔍 resetea el zoom.
-- [ ] Tocá un país: se abre la hoja de detalle con secciones Political, Physical y Stories, de solo lectura.
-- [ ] Tocá el mar: no se abre nada.
+- [ ] **Todas las banderas** activo por defecto: los 174 países se pintan con su bandera en perspectiva, recortados a su contorno y con el nombre encima.
+- [ ] Sin zoom, los países chicos aparecen como **ícono de bandera** con el nombre debajo. Hacé zoom sobre un país chico: pasa a estar relleno con su bandera.
+- [ ] Tocá la barra inferior (**Preguntas** / **Questions**) y seleccioná una de las preguntas precargadas (ej. *¿Qué países ganaron mundiales de fútbol?*).
+- [ ] Con **zoom amplio**, solo quedan pintados los países de la respuesta con su píldora corta (`#1 · Brasil · 5 🏆`).
+- [ ] Al hacer **zoom corto** (o al tocar un país de la respuesta), aparece debajo del país la tarjeta con su descripción (`detail`).
+- [ ] Para hacer preguntas nuevas con **Gemini**, **ChatGPT**, **Claude** u **Ollama local**, seguí los pasos de [TESTING_IPHONE.md](TESTING_IPHONE.md) §3 (o corré `flutter run -d macos --dart-define=GEMINI_API_KEY=AIza...`).
 
 ### 4.4 Volver a calibrar
 - [ ] En Explore, el ícono ⛶ vuelve a Calibrate con los handles donde estaban.
@@ -132,6 +133,8 @@ La app de macOS corre en sandbox; el bundle id actual es `com.orbio.app`.
 | Qué | Ruta |
 |---|---|
 | Snapshots (cámara, importadas, demo) | `~/Library/Containers/com.orbio.app/Data/Documents/orbio/snapshots/` |
+| Configuración de IA y API keys | `~/Library/Containers/com.orbio.app/Data/Documents/llm_config.json` |
+| Historial de preguntas | `~/Library/Containers/com.orbio.app/Data/Documents/question_history.json` |
 
 Para empezar de cero, cerrá la app y borrá `~/Library/Containers/com.orbio.app`.
 

@@ -34,7 +34,16 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Orbio uses the camera to photograph your physical world map. Photos stay on this device.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Orbio does not record audio; this permission is required by the camera framework.</string>
+	<string>Orbio uses the microphone so you can ask questions about the world map by voice.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Orbio transcribes your voice questions on the device to highlight matching countries on the map.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Orbio connects to your local Ollama server on your Mac when you use local AI.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Orbio opens a photo of your physical world map from your library. Photos stay on this device.</string>
 	<key>UIApplicationSceneManifest</key>

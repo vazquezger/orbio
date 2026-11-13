@@ -3,6 +3,17 @@
   "appTitle": "Orbio",
   "cameraImportTooltip": "Import a photo of the canvas",
   "cameraDemoTooltip": "Try with a demo snapshot",
+  "cameraResumeTooltip": "Resume last calibration",
+  "cameraResumeButton": "Resume last calibration",
+  "cameraResumeUnavailable": "No previous calibration found.",
+  "cameraResumeFailed": "Could not resume last map: {details}",
+  "@cameraResumeFailed": {
+    "placeholders": {
+      "details": {
+        "type": "String"
+      }
+    }
+  },
   "cameraCaptureTooltip": "Take snapshot",
   "cameraFramingHint": "Hold the phone flat above the canvas.\nKeep all 4 anchors in view.",
   "cameraNotFound": "No camera found on this device.",
@@ -16,8 +27,9 @@
       }
     }
   },
-  "cameraImportButton": "Import canvas photo",
-  "cameraDemoButton": "Use demo snapshot",
+  "cameraTakePhotoButton": "Take photo with camera",
+  "cameraPickGalleryButton": "Choose photo from gallery",
+  "cameraDemoButton": "Try sample map (no paper needed)",
   "cameraRetryButton": "Retry camera",
   "cameraImportFailed": "Could not import photo: {details}",
   "@cameraImportFailed": {
@@ -80,7 +92,7 @@
   "exploreTitle": "Explore",
   "exploreResetZoom": "Reset zoom",
   "exploreRecalibrate": "Recalibrate",
-  "exploreHint": "Tap a country to learn more · pinch to zoom",
+  "exploreHint": "Zoom in or tap a country to read its detail",
   "exploreLoadFailed": "Could not load map data: {details}",
   "@exploreLoadFailed": {
     "placeholders": {
@@ -89,33 +101,6 @@
       }
     }
   },
-  "layerFlags": "Flags",
-  "layerGovernment": "Government",
-  "layerPhysical": "Physical",
-  "pinVolcano": "Volcano",
-  "pinPeak": "Mountain",
-  "pinDepression": "Depression",
-  "elevationMeters": "{meters} m",
-  "@elevationMeters": {
-    "placeholders": {
-      "meters": {
-        "type": "int",
-        "format": "decimalPattern"
-      }
-    }
-  },
-  "noteFact": "Did you know?",
-  "noteStory": "Story",
-  "sheetPolitical": "Political",
-  "sheetPhysical": "Physical",
-  "sheetStories": "Stories",
-  "sheetCapital": "Capital",
-  "sheetGovernment": "Government",
-  "govPresidentialRepublic": "Presidential republic",
-  "govParliamentaryRepublic": "Parliamentary republic",
-  "govConstitutionalMonarchy": "Constitutional monarchy",
-  "govAbsoluteMonarchy": "Absolute monarchy",
-  "govMonarchyHint": "👑 a king, queen or emperor",
   "cameraLiveTooltip": "Live view",
   "liveTitle": "Live",
   "liveSearching": "Point the camera at the canvas",
@@ -131,5 +116,36 @@
       }
     }
   },
-  "liveUnavailable": "Live view needs a camera (iPhone or Android)."
+  "liveUnavailable": "Live view needs a camera (iPhone or Android).",
+  "questionHint": "Ask anything about the world…",
+  "questionAllFlags": "All flags",
+  "questionClearTooltip": "Show all flags",
+  "questionHistoryTitle": "Questions",
+  "questionAskButton": "Ask",
+  "questionListening": "Listening… tap to send",
+  "questionMicTooltip": "Ask by voice",
+  "questionMicUnavailable": "Voice recognition isn't available here. Type your question below.",
+  "questionThinking": "Thinking…",
+  "questionEmptyResult": "No matching countries found.",
+  "questionCloseUpHint": "Move closer or zoom in on a country to read its description",
+  "questionCollapseTooltip": "Collapse question bar",
+  "questionExpandTooltip": "Ask or view questions",
+  "llmSettingsTitle": "AI Provider",
+  "llmProviderLabel": "Provider",
+  "llmModelLabel": "Model",
+  "llmApiKeyLabel": "API key",
+  "llmApiKeyHint": "Paste your API key",
+  "llmOllamaUrlLabel": "Ollama URL",
+  "llmOllamaUrlHint": "http://192.168.1.x:11434",
+  "llmSaveButton": "Save",
+  "llmMissingKeyPrompt": "Configure an AI provider (Gemini, ChatGPT, Claude or local Ollama) to ask new questions.",
+  "projectionOrbioCanvas": "Orbio Canvas",
+  "projectionSchoolMap": "School Map",
+  "projectionLabel": "Projection",
+  "homeScanSchoolMap": "Scan School Map",
+  "homeScanSchoolMapSubtitle": "Take a photo of any wall poster and explore with AI",
+  "homeOrbioCanvas": "Orbio Canvas & AR",
+  "homeOrbioCanvasSubtitle": "Auto-detection with anchors & real-time AR tracking",
+  "homeDownloadCanvas": "Download printable canvas (PDF)",
+  "homeOpenLive": "Open Live AR"
 }

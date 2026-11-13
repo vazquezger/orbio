@@ -2,38 +2,50 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../data/repositories/snapshot_store.dart';
 import '../../data/repositories/map_repository.dart';
+import '../../data/repositories/question_store.dart';
+import '../../data/repositories/snapshot_store.dart';
 import '../l10n_labels.dart';
 import 'calibration_screen.dart';
+import 'explore_screen.dart';
 import 'live_screen.dart';
 
-/// Step 1: live top-down preview to take a snapshot of the canvas, or import
-/// an existing photo, or use a demo snapshot.
+/// Step 1: live top-down preview to take a snapshot of the canvas, open Live
+/// view (AR), import an existing photo, or use a demo snapshot.
 class CameraScreen extends StatefulWidget {
   const CameraScreen({
     super.key,
     required this.repository,
     required this.snapshotStore,
+    this.questionStore,
   });
 
   final MapRepository repository;
   final SnapshotStore snapshotStore;
+  final QuestionStore? questionStore;
 
   @override
   State<CameraScreen> createState() => _CameraScreenState();
 }
 
 class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver {
+  late final QuestionStore _questionStore = widget.questionStore ?? QuestionStore();
   CameraController? _controller;
   String? _error;
   bool _busy = false;
+  bool _hasLastCalibration = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _initCamera();
+    _checkLastCalibration();
+  }
+
+  Future<void> _checkLastCalibration() async {
+    final cal = await widget.snapshotStore.loadLastCalibration();
+    if (mounted) setState(() => _hasLastCalibration = cal != null);
   }
 
   @override
@@ -67,12 +79,23 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
         (c) => c.lensDirection == CameraLensDirection.back,
         orElse: () => cameras.first,
       );
-      final controller = CameraController(
+      CameraController controller = CameraController(
         camera,
-        ResolutionPreset.max,
+        ResolutionPreset.veryHigh,
         enableAudio: false,
       );
-      await controller.initialize();
+      try {
+        await controller.initialize();
+      } catch (_) {
+        // Fallback to high if veryHigh is unsupported on this device
+        await controller.dispose();
+        controller = CameraController(
+          camera,
+          ResolutionPreset.high,
+          enableAudio: false,
+        );
+        await controller.initialize();
+      }
       await controller.setFlashMode(FlashMode.off).catchError((_) {});
       if (!mounted) {
         await controller.dispose();
@@ -85,7 +108,6 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     } on CameraException catch (e) {
       if (mounted) setState(() => _error = _describe(e));
     } catch (e) {
-      // e.g. MissingPluginException on platforms without a camera plugin.
       if (mounted) setState(() => _error = context.l10n.cameraUnavailable);
     }
   }
@@ -115,6 +137,31 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     }
   }
 
+  Future<void> _takeSystemPhoto() async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    final controller = _controller;
+    try {
+      final picked = await ImagePicker().pickImage(
+        source: ImageSource.camera,
+        requestFullMetadata: false,
+      );
+      if (picked == null) return;
+      final path = await widget.snapshotStore.saveSnapshot(picked.path);
+      if (controller != null && controller.value.isInitialized) {
+        await controller.pausePreview();
+      }
+      await _openCalibration(path);
+      if (mounted && controller != null && _controller == controller) {
+        await controller.resumePreview();
+      }
+    } catch (e) {
+      if (mounted) _snack(context.l10n.cameraUnavailable);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   Future<void> _useDemo() async {
     if (_busy) return;
     setState(() => _busy = true);
@@ -128,8 +175,6 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     }
   }
 
-  /// Imports an existing photo of the map (gallery on mobile, file dialog
-  /// on macOS). Keeps the demo and live camera as alternatives.
   Future<void> _importPhoto() async {
     if (_busy) return;
     setState(() => _busy = true);
@@ -139,7 +184,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
         source: ImageSource.gallery,
         requestFullMetadata: false,
       );
-      if (picked == null) return; // user cancelled
+      if (picked == null) return;
       final path = await widget.snapshotStore.saveSnapshot(picked.path);
       if (controller != null && controller.value.isInitialized) {
         await controller.pausePreview();
@@ -155,7 +200,6 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     }
   }
 
-  /// Live view needs the camera for itself: release ours while it is open.
   Future<void> _openLive() async {
     if (_busy) return;
     final controller = _controller;
@@ -163,7 +207,12 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     await controller?.dispose();
     if (!mounted) return;
     await Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => LiveScreen(repository: widget.repository)),
+      MaterialPageRoute<void>(
+        builder: (_) => LiveScreen(
+          repository: widget.repository,
+          questionStore: _questionStore,
+        ),
+      ),
     );
     if (mounted) await _initCamera();
   }
@@ -175,9 +224,55 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
         builder: (_) => CalibrationScreen(
           imagePath: path,
           repository: widget.repository,
+          questionStore: _questionStore,
+          snapshotStore: widget.snapshotStore,
         ),
       ),
     );
+    if (mounted) await _checkLastCalibration();
+  }
+
+  Future<void> _resumeLastCalibration() async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    final controller = _controller;
+    try {
+      final cal = await widget.snapshotStore.loadLastCalibration();
+      if (cal == null) {
+        if (mounted) _snack(context.l10n.cameraResumeUnavailable);
+        return;
+      }
+      final image = await SnapshotStore.decodeImageFile(cal.imagePath);
+      if (controller != null && controller.value.isInitialized) {
+        await controller.pausePreview();
+      }
+      if (!mounted) {
+        image.dispose();
+        return;
+      }
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => ExploreScreen(
+            image: image,
+            corners: List.of(cal.corners),
+            repository: widget.repository,
+            questionStore: _questionStore,
+          ),
+        ),
+      );
+      if (mounted && controller != null && _controller == controller) {
+        await controller.resumePreview();
+      }
+      if (mounted) await _checkLastCalibration();
+    } catch (e) {
+      await widget.snapshotStore.clearLastCalibration();
+      if (mounted) {
+        setState(() => _hasLastCalibration = false);
+        _snack(context.l10n.cameraResumeFailed('$e'));
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   void _snack(String msg) {
@@ -195,6 +290,12 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         actions: [
+          if (_hasLastCalibration)
+            IconButton(
+              tooltip: context.l10n.cameraResumeTooltip,
+              onPressed: _busy ? null : _resumeLastCalibration,
+              icon: const Icon(Icons.explore_outlined),
+            ),
           IconButton(
             tooltip: context.l10n.cameraLiveTooltip,
             onPressed: _busy ? null : _openLive,
@@ -220,65 +321,35 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
           else if (_error != null)
             _Unavailable(
               message: _error!,
+              onResume: _hasLastCalibration ? _resumeLastCalibration : null,
+              onTakePhoto: _busy ? null : _takeSystemPhoto,
               onImport: _busy ? null : _importPhoto,
               onDemo: _busy ? null : _useDemo,
               onRetry: _initCamera,
             )
           else
             const Center(child: CircularProgressIndicator()),
-          if (controller != null) const IgnorePointer(child: _FramingGuide()),
-          if (_busy) const ColoredBox(color: Colors.black45, child: Center(child: CircularProgressIndicator())),
+          if (_busy)
+            const ColoredBox(
+              color: Colors.black45,
+              child: Center(child: CircularProgressIndicator()),
+            ),
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: controller == null
-          ? null
-          : FloatingActionButton.large(
-              tooltip: context.l10n.cameraCaptureTooltip,
-              onPressed: _busy ? null : _capture,
-              child: const Icon(Icons.camera_alt),
-            ),
-    );
-  }
-}
-
-class _FramingGuide extends StatelessWidget {
-  const _FramingGuide();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.black54,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Text(
-            context.l10n.cameraFramingHint,
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
-        Expanded(
-          child: Center(
-            child: FractionallySizedBox(
-              widthFactor: 0.9,
-              child: AspectRatio(
-                aspectRatio: 2,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white70, width: 2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
+      floatingActionButton: FloatingActionButton.large(
+        tooltip: context.l10n.cameraCaptureTooltip,
+        onPressed: _busy
+            ? null
+            : () {
+                if (controller != null && controller.value.isInitialized) {
+                  _capture();
+                } else {
+                  _takeSystemPhoto();
+                }
+              },
+        child: const Icon(Icons.camera_alt),
+      ),
     );
   }
 }
@@ -286,11 +357,15 @@ class _FramingGuide extends StatelessWidget {
 class _Unavailable extends StatelessWidget {
   const _Unavailable({
     required this.message,
+    this.onResume,
+    required this.onTakePhoto,
     required this.onImport,
     required this.onDemo,
     required this.onRetry,
   });
   final String message;
+  final VoidCallback? onResume;
+  final VoidCallback? onTakePhoto;
   final VoidCallback? onImport;
   final VoidCallback? onDemo;
   final VoidCallback onRetry;
@@ -303,22 +378,47 @@ class _Unavailable extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.no_photography_outlined, color: Colors.white70, size: 56),
+            const Icon(
+              Icons.camera_alt_outlined,
+              color: Colors.white70,
+              size: 56,
+            ),
             const SizedBox(height: 12),
-            Text(message, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white)),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white),
+            ),
             const SizedBox(height: 20),
+            if (onResume != null) ...[
+              FilledButton.icon(
+                onPressed: onResume,
+                icon: const Icon(Icons.explore_outlined),
+                label: Text(context.l10n.cameraResumeButton),
+              ),
+              const SizedBox(height: 10),
+            ],
             FilledButton.icon(
+              onPressed: onTakePhoto,
+              icon: const Icon(Icons.camera_alt),
+              label: Text(context.l10n.cameraTakePhotoButton),
+            ),
+            const SizedBox(height: 10),
+            OutlinedButton.icon(
               onPressed: onImport,
               icon: const Icon(Icons.photo_library_outlined),
-              label: Text(context.l10n.cameraImportButton),
+              label: Text(context.l10n.cameraPickGalleryButton),
             ),
-            const SizedBox(height: 8),
-            OutlinedButton.icon(
+            const SizedBox(height: 10),
+            TextButton.icon(
               onPressed: onDemo,
-              icon: const Icon(Icons.public),
+              icon: const Icon(Icons.public, size: 18),
               label: Text(context.l10n.cameraDemoButton),
             ),
-            TextButton(onPressed: onRetry, child: Text(context.l10n.cameraRetryButton)),
+            TextButton(
+              onPressed: onRetry,
+              child: Text(context.l10n.cameraRetryButton),
+            ),
           ],
         ),
       ),
